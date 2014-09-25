@@ -5,6 +5,11 @@ pom.xml.versionsBackup
 pom.xml.next
 release.properties
 
+# Eclipse
+.classpath
+.project
+.settings/
+
 # =========================
 # Operating System Files
 # =========================
