@@ -50,6 +50,7 @@ public class Extractor {
             Elements images = page.select(".title").select("a[href$=jpg], a[href$=png]");
 
             for (Element link : images) {
+            	
                 if (i == this.num_pics) {
                     break;
                 }
@@ -73,15 +74,8 @@ public class Extractor {
                     System.exit(-1);
                 }
                 //Saving the picture to the file
-                byte[] b = new byte[20480];
-                try {
-                    int length;
-                    while ((length = in.read(b)) != -1) {
-                        op.write(b, 0, length);
-                    }
-                } catch (IOException e) {
-                    System.out.println("An error occured while saving the picture.");
-                }
+                savePicture(in, op);
+                
                 in.close();
                 op.close();
 
@@ -93,6 +87,18 @@ public class Extractor {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    
+    private static void savePicture(InputStream in, OutputStream op){
+        byte[] b = new byte[20480];
+        try {
+            int length;
+            while ((length = in.read(b)) != -1) {
+                op.write(b, 0, length);
+            }
+        } catch (IOException e) {
+            System.out.println("An error occured while saving the picture.");
         }
     }
 
