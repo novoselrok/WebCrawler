@@ -19,7 +19,8 @@ import org.jsoup.select.Elements;
 
 /**
  *
- * @author ryan
+ * @author Ryan
+ * @author Rok
  */
 public class Extractor {
 
@@ -30,18 +31,18 @@ public class Extractor {
     private Scanner scanner;
 
     // Constructor
-    public Extractor(Scanner scan) {
-        this.scanner = scan;
+    public Extractor(int num_pics, String sub, String dir) {
+        this.num_pics = num_pics;
+        this.sub = sub;
+        this.dir = dir;
     }
 
     public void beginExtract() {
-        this.greeter();
-
         Document page;
         int i = 0;
         try {
-            page = Jsoup.connect("http://www.reddit.com/r/"
-                    + sub + "/top/?sort=top&t=month").get();
+        	
+            page = Jsoup.connect("http://www.reddit.com/r/"+ this.sub + "/top/?sort=top&t=month").get();
 
             //Selecting all the elements with HTML class "title", 
             //that have nested inside <a href="..">..</a> tags
@@ -49,7 +50,7 @@ public class Extractor {
             Elements images = page.select(".title").select("a[href$=jpg], a[href$=png]");
 
             for (Element link : images) {
-                if (i == num_pics) {
+                if (i == this.num_pics) {
                     break;
                 }
 
@@ -58,11 +59,12 @@ public class Extractor {
                 InputStream in = addr.openStream();
                 OutputStream op = null;
                 String[] tab = link.attr("href").split("/");
+                
                 //TODO: If the specified path doesn't exist try and create it
                 try {
                     if ((link.attr("href").endsWith("jpg"))
                             || (link.attr("href").endsWith("png"))) {
-                        op = new FileOutputStream(dir + tab[tab.length - 1]);
+                        op = new FileOutputStream(this.dir + tab[tab.length - 1]);
                     } else {
                         System.out.println("Sorry, no dice.. yet");
                     }
@@ -84,7 +86,8 @@ public class Extractor {
                 op.close();
 
                 System.out.println("Download complete: " + link.attr("href"));
-                System.out.println("File has been saved in: " + dir + tab[tab.length - 1]);
+                System.out.println("File has been saved in: " + this.dir + tab[tab.length - 1]);
+                
                 i++;
             }
 
@@ -93,15 +96,5 @@ public class Extractor {
         }
     }
 
-    private void greeter() {
-        System.out.println("Enter how many pictures do you want to download: ");
-        this.num_pics = this.scanner.nextInt();
-
-        System.out.println("What subbredit do you want to download from?");
-        this.sub = this.scanner.next();
-
-        System.out.println("What directory do you want to save in? Ex: C:\\Users\\<your_username>\\Desktop\\");
-        this.dir = this.scanner.next();
-    }
 
 }
