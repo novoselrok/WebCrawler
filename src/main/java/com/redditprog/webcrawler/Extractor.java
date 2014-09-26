@@ -5,12 +5,14 @@
  */
 package com.redditprog.webcrawler;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -64,6 +66,11 @@ public class Extractor {
 	                OutputStream op = null;
 	                String[] tab = link.attr("href").split("/");
 	                
+	                if(new File(this.dir + tab[tab.length - 1]).exists()) {
+	                	System.out.println("File [" + (this.dir + tab[tab.length - 1]) + "] already exists.\nAnother picture will be downloaded instead.");
+	                	continue;
+	                }
+	                
 	                try {
 	                    if ((link.attr("href").endsWith("jpg")) || (link.attr("href").endsWith("png"))) {
 	                        op = new FileOutputStream(this.dir + tab[tab.length - 1]);
@@ -71,9 +78,10 @@ public class Extractor {
 	                        System.out.println("Sorry, no dice.. yet");
 	                    }
 	                } catch (FileNotFoundException e) {
-	                    System.out.println("You have entered an invalid path. Try again.");
+	                    System.out.println("You have entered an invalid path. Shutting down...");
 	                    System.exit(-1);
 	                }
+	                
 	                //Saving the picture to the file
 	                savePicture(in, op);
 	                
@@ -86,6 +94,7 @@ public class Extractor {
 	                
 	                i++;
 	            }
+	            //Here we substitute the original url, with the next page one
 	            url = next_page;
         	}
         } catch (IOException e) {

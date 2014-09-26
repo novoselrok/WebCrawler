@@ -14,17 +14,18 @@ public class App {
         boolean isFinished = false;
         
         while (!isFinished) {
-            System.out.println("Reddit Photo Extractor 1.0");
+        	//We're not 1.0 yet :D
+            System.out.println("Reddit Photo Extractor 0.2");
             
             askUser(scanner);
             
             System.out.print("Do you want to extract more photos?(y/n): ");
             String reply = scanner.next();
-            System.out.println("\n\n");
+            System.out.println("\n");
             
             if (reply.equalsIgnoreCase("n")){
                 isFinished = true;
-                System.out.println("Have a good day!");
+                System.out.println("Have a good day and thank you for using Reddit Photo Extractor!");
             }
         }
         
