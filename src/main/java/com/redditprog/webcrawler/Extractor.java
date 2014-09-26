@@ -24,10 +24,10 @@ import org.jsoup.select.Elements;
 public class Extractor {
 
     // Instance variables
-    private int num_pics;
-    private String sub;
-    private String dir;
-    private String top_time;
+    private final int num_pics;
+    private final String sub;
+    private final String dir;
+    private final String top_time;
     
     // Constructor
     public Extractor(int num_pics, String sub, String dir, String top_time) {
@@ -41,7 +41,7 @@ public class Extractor {
         Document page;
         int i = 0;
         try {
-        	System.out.println("kle");
+        	
             page = Jsoup.connect("http://www.reddit.com/r/"+ this.sub + "/top/?sort=top&t=" + this.top_time).get();
 
             //Selecting all the elements with HTML class "title", 

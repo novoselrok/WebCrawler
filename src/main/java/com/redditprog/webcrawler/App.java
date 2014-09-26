@@ -11,8 +11,28 @@ public class App {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        boolean isFinished = false;
         
-        //Here we get the Operating Systems' name
+        while (!isFinished) {
+            System.out.println("Reddit Photo Extractor 1.0");
+            
+            askUser(scanner);
+            
+            System.out.print("Do you want to extract more photos?(y/n): ");
+            String reply = scanner.next();
+            System.out.println("\n\n");
+            
+            if (reply.equalsIgnoreCase("n")){
+                isFinished = true;
+                System.out.println("Have a good day!");
+            }
+        }
+        
+        scanner.close();
+    }
+    
+    public static void askUser(Scanner scanner) {
+         //Here we get the Operating Systems' name
         String os = System.getProperty("os.name");
         
         System.out.println("What subbredit do you want to download from?");
@@ -21,8 +41,16 @@ public class App {
         System.out.println("Enter how many pictures do you want to download: ");
         int num_pics = scanner.nextInt();
 
+        
         System.out.println("Top links from which period: hour, day, week, month, year, all");
         String top_time = scanner.next();
+        
+        // If top_time is not set to any of the choices except "all", then
+        // the value is set to "all" by default
+        if (!(top_time.contains("hour") || top_time.contains("day") || top_time.contains("week")
+                || top_time.contains("month") || top_time.contains("year"))) {
+            top_time = "all";
+        }
         
         String dir;
         System.out.println("Do you want to save in the current working directory? y(es)/n(o)");
@@ -41,7 +69,5 @@ public class App {
         
         Extractor anExtractor = new Extractor(num_pics, sub, dir, top_time);
         anExtractor.beginExtract();
-        
-        scanner.close();
     }
 }
