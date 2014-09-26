@@ -23,11 +23,6 @@ public class SubRedditChecker {
 
             // create a new connection
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-
-            // disable any redirect, since reddit automatically use search if
-            // subreddit does not exist
-            // Uses HEAD as request for faster link check
-            huc.setRequestMethod("HEAD");
             
             // connects to the http
             huc.connect();
