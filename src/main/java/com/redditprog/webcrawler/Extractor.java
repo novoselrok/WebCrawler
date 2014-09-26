@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Scanner;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -28,7 +27,6 @@ public class Extractor {
     private int num_pics;
     private String sub;
     private String dir;
-    private Scanner scanner;
 
     // Constructor
     public Extractor(int num_pics, String sub, String dir) {

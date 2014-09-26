@@ -1,6 +1,5 @@
 package com.redditprog.webcrawler;
 
-
 import java.util.Scanner;
 
 /**
@@ -24,5 +23,7 @@ public class App {
 
         Extractor anExtractor = new Extractor(num_pics, sub, dir);
         anExtractor.beginExtract();
+        
+        scanner.close();
     }
 }
