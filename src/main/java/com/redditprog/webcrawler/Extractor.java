@@ -72,11 +72,7 @@ public class Extractor {
 	                }
 	                
 	                try {
-	                    if ((link.attr("href").endsWith("jpg")) || (link.attr("href").endsWith("png"))) {
-	                        op = new FileOutputStream(this.dir + tab[tab.length - 1]);
-	                    } else {
-	                        System.out.println("Sorry, no dice.. yet");
-	                    }
+                        op = new FileOutputStream(this.dir + tab[tab.length - 1]);
 	                } catch (FileNotFoundException e) {
 	                    System.out.println("You have entered an invalid path. Shutting down...");
 	                    System.exit(-1);
