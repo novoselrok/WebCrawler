@@ -41,50 +41,53 @@ public class Extractor {
         Document page;
         int i = 0;
         try {
-        	
-            page = Jsoup.connect("http://www.reddit.com/r/"+ this.sub + "/top/?sort=top&t=" + this.top_time).get();
-
-            //Selecting all the elements with HTML class "title", 
-            //that have nested inside <a href="..">..</a> tags
-            //that end with jpg or png
-            Elements images = page.select(".title").select("a[href$=jpg], a[href$=png]");
+        	String url = "http://www.reddit.com/r/"+ this.sub + "/top/?sort=top&t=" + this.top_time;
+        	while(i != this.num_pics){
+        		
+	            page = Jsoup.connect(url).get();
+	            String next_page = page.select("a[rel=nofollow next]").attr("href");
+	            
+	            //Selecting all the elements with HTML class "title", 
+	            //that have nested inside <a href="..">..</a> tags
+	            //that end with jpg or png
+	            Elements images = page.select(".title").select("a[href$=jpg], a[href$=png]");
             
-            for (Element link : images) {
-            	
-                if (i == this.num_pics) {
-                    break;
-                }
-
-                //Saving the url of the picture
-                URL addr = new URL(link.attr("href"));
-                InputStream in = addr.openStream();
-                OutputStream op = null;
-                String[] tab = link.attr("href").split("/");
-                
-                try {
-                    if ((link.attr("href").endsWith("jpg")) || (link.attr("href").endsWith("png"))) {
-                        op = new FileOutputStream(this.dir + tab[tab.length - 1]);
-                    } else {
-                        System.out.println("Sorry, no dice.. yet");
-                    }
-                } catch (FileNotFoundException e) {
-                    System.out.println("You have entered an invalid path. Try again.");
-                    System.exit(-1);
-                }
-                //Saving the picture to the file
-                savePicture(in, op);
-                
-                in.close();
-                op.close();
-                
-                System.out.println("==================");
-                System.out.println("Download complete: " + link.attr("href"));
-                System.out.println("File has been saved in: " + this.dir + tab[tab.length - 1]);
-                System.out.println("==================");
-                
-                i++;
-            }
-
+	            for (Element link : images) {
+	            	
+	                if (i == this.num_pics) {
+	                    break;
+	                }
+	                
+	                //Saving the url of the picture
+	                URL addr = new URL(link.attr("href"));
+	                InputStream in = addr.openStream();
+	                OutputStream op = null;
+	                String[] tab = link.attr("href").split("/");
+	                
+	                try {
+	                    if ((link.attr("href").endsWith("jpg")) || (link.attr("href").endsWith("png"))) {
+	                        op = new FileOutputStream(this.dir + tab[tab.length - 1]);
+	                    } else {
+	                        System.out.println("Sorry, no dice.. yet");
+	                    }
+	                } catch (FileNotFoundException e) {
+	                    System.out.println("You have entered an invalid path. Try again.");
+	                    System.exit(-1);
+	                }
+	                //Saving the picture to the file
+	                savePicture(in, op);
+	                
+	                in.close();
+	                op.close();
+	                
+	                System.out.println("==================");
+	                System.out.println("Download #" + (i + 1) + " complete: " + link.attr("href"));
+	                System.out.println("File has been saved in: " + this.dir + tab[tab.length - 1]);
+	                
+	                i++;
+	            }
+	            url = next_page;
+        	}
         } catch (IOException e) {
             e.printStackTrace();
         }
