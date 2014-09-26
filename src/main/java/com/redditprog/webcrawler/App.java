@@ -16,7 +16,7 @@ public class App {
 
         while (!isFinished) {
             //We're not 1.0 yet :D
-            System.out.println("Reddit Photo Extractor 0.2");
+            System.out.println("Reddit Photo Extractor v0.1-alpha");
 
             askUser(scanner);
 
