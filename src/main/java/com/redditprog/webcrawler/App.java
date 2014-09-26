@@ -39,10 +39,11 @@ public class App {
         boolean isValid;
         String sub;
 
+        // Ask user for subreddit name and verifies it
         while (true) {
             System.out.println("What subbredit do you want to download from?");
             sub = scanner.next();
-            
+
             isValid = SubRedditChecker.verifySubReddit(sub);
             if (!isValid) {
                 System.out.println("No such subreddit exist! try again.\n\n");
@@ -51,9 +52,17 @@ public class App {
             }
         }
 
+        // Ask user for number of pictures and verifies it
         System.out.println("Enter how many pictures do you want to download: ");
+
+        while (!scanner.hasNextInt()) {
+            System.out.println("That is not a valid number. Please try again.");
+            scanner.next();
+        }
+
         int num_pics = scanner.nextInt();
 
+        // Ask user for range of links for a  subreddit
         System.out.println("Top links from which period: hour, day, week, month, year, all");
         String top_time = scanner.next();
 
@@ -65,24 +74,37 @@ public class App {
         }
 
         String dir;
-        System.out.println("Do you want to save in the current working directory? y(es)/n(o)");
-        String answer = scanner.next().toLowerCase();
 
-        if (answer.equals("y") || answer.equals("yes")) {
-            dir = System.getProperty("user.dir");
-            if (os.startsWith("Windows")) {
-                dir += "\\";
+        while (true) {
+            System.out.println("Do you want to save in the default folder? y(es)/n(o)");
+            String answer = scanner.next().toLowerCase();
+
+            if (answer.equals("y") || answer.equals("yes")) {
+                dir = System.getProperty("user.dir");
+                if (os.startsWith("Windows")) {
+                    dir = "C:\\Users\\Public\\Pictures\\";
+                }
+
+                if (os.startsWith("Linux")) {
+                    dir = System.getProperty("user.dir") + "/";
+                }
+
+                break;
+            } else if (answer.equals("n") || answer.equals("no")) {
+                System.out.println("Enter the path you want to save the pictures in: ");
+                dir = scanner.next();
+                if (!dir.endsWith("\\") && os.startsWith("Windows")) {
+                    dir += "\\";
+                }
+
+                break;
+            } else {
+                System.out.println("Invalid answer. Please answer yes or no.");
             }
-        } else if (answer.equals("n") || answer.equals("no")) {
-            System.out.println("Enter the path you want to save the pictures in: ");
-            dir = scanner.next();
-            if (!dir.endsWith("\\") && os.startsWith("Windows")) {
-                dir += "\\";
-            }
-        } else {
-            dir = "";
+
         }
-
+        
+        // Begin extraction and pass arguments
         Extractor anExtractor = new Extractor(num_pics, sub, dir, top_time);
         anExtractor.beginExtract();
     }
