@@ -27,26 +27,28 @@ public class Extractor {
     private int num_pics;
     private String sub;
     private String dir;
-
+    private String top_time;
+    
     // Constructor
-    public Extractor(int num_pics, String sub, String dir) {
+    public Extractor(int num_pics, String sub, String dir, String top_time) {
         this.num_pics = num_pics;
         this.sub = sub;
         this.dir = dir;
+        this.top_time = top_time;
     }
 
     public void beginExtract() {
         Document page;
         int i = 0;
         try {
-        	
-            page = Jsoup.connect("http://www.reddit.com/r/"+ this.sub + "/top/?sort=top&t=month").get();
+        	System.out.println("kle");
+            page = Jsoup.connect("http://www.reddit.com/r/"+ this.sub + "/top/?sort=top&t=" + this.top_time).get();
 
             //Selecting all the elements with HTML class "title", 
             //that have nested inside <a href="..">..</a> tags
             //that end with jpg or png
             Elements images = page.select(".title").select("a[href$=jpg], a[href$=png]");
-
+            
             for (Element link : images) {
             	
                 if (i == this.num_pics) {
@@ -59,10 +61,8 @@ public class Extractor {
                 OutputStream op = null;
                 String[] tab = link.attr("href").split("/");
                 
-                //TODO: If the specified path doesn't exist try and create it
                 try {
-                    if ((link.attr("href").endsWith("jpg"))
-                            || (link.attr("href").endsWith("png"))) {
+                    if ((link.attr("href").endsWith("jpg")) || (link.attr("href").endsWith("png"))) {
                         op = new FileOutputStream(this.dir + tab[tab.length - 1]);
                     } else {
                         System.out.println("Sorry, no dice.. yet");
@@ -76,9 +76,11 @@ public class Extractor {
                 
                 in.close();
                 op.close();
-
+                
+                System.out.println("==================");
                 System.out.println("Download complete: " + link.attr("href"));
                 System.out.println("File has been saved in: " + this.dir + tab[tab.length - 1]);
+                System.out.println("==================");
                 
                 i++;
             }
@@ -86,6 +88,9 @@ public class Extractor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("==================");
+        System.out.println("Download finished!");
+        
     }
     
     private static void savePicture(InputStream in, OutputStream op){
