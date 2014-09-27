@@ -52,6 +52,7 @@ public class Extractor {
     }
 
     public void beginExtract() {
+        
         //System.out.println("Your pictures will be saved in: " + this.dir);
         Document page;
         int i = 0;

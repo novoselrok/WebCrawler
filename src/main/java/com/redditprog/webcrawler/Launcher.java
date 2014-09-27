@@ -35,7 +35,23 @@ public class Launcher {
             System.out.println("What subbredit do you want to download from?");
             sub_temp = scanner.next();
 
-            isValid = SubRedditChecker.verifySubReddit(sub_temp);
+            int statusSubReddit = SubRedditChecker.verifySubReddit(sub_temp);
+            
+            switch (statusSubReddit) {
+                case 0:
+                    isValid = false;
+                    break;
+                case 1:
+                    isValid = true;
+                    break;
+                case 2: 
+                    isValid = true;
+                    break;
+                default:
+                    isValid = false;
+                    break;
+            }
+            
             if (!isValid) {
                 System.out.println("No such subreddit exist! try again.\n\n");
             }
