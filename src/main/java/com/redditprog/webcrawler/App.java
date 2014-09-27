@@ -15,14 +15,23 @@ public class App {
         boolean isFinished = false;
         //We're not 1.0 yet :D
         System.out.println("Reddit Photo Extractor v0.1-alpha");
-        Launcher launcher = null;
+        Launcher launcher;
         while (!isFinished) {
             //askUser(scanner);
-        	launcher = new Launcher();
-        	launcher.start();
-        	
-            System.out.print("Do you want to extract more photos?(y/n): ");
-            String reply = scanner.next();
+            launcher = new Launcher(scanner);
+            launcher.start();
+
+            String reply;
+            while (true) {
+                System.out.print("Do you want to extract more photos?(y/n): ");
+                reply = scanner.next();
+
+                if ((reply.equalsIgnoreCase("y")) || (reply.equalsIgnoreCase("n"))) {
+                    break;
+                } else {
+                    System.out.println("That is not a valid input. Please try again (y/n):");
+                }
+            }
             System.out.println("\n");
 
             if (reply.equalsIgnoreCase("n")) {
@@ -31,5 +40,5 @@ public class App {
             }
         }
         scanner.close();
-    }    
+    }
 }

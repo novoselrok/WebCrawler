@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.redditprog.webcrawler;
 
 import java.io.IOException;
@@ -24,22 +20,19 @@ public class SubRedditChecker {
 
             // create a new connection
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-            
+
             // connects to the http
             huc.connect();
-
-            // Possible solution (do not delete)
-            //System.out.println("connected url: " + huc.getURL());
 
             // Extract the redirect url in string
             InputStream is = null;
             String redirectURL = "";
-            try{
-            	is = huc.getInputStream();
-            	redirectURL = huc.getURL().getPath();
-            	is.close();
-            }catch(IOException e){
-            	//e.printStackTrace();
+            try {
+                is = huc.getInputStream();
+                redirectURL = huc.getURL().getPath();
+                is.close();
+            } catch (IOException e) {
+                //e.printStackTrace();
             }
             // checks if it is a redirect and return boolean value
             return redirectURL.contains("/r/");
