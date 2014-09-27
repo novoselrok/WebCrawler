@@ -5,12 +5,13 @@
  */
 package com.redditprog.webcrawler;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- *
+ * @author Rok
  * @author ryan
  */
 public class SubRedditChecker {
@@ -31,10 +32,15 @@ public class SubRedditChecker {
             //System.out.println("connected url: " + huc.getURL());
 
             // Extract the redirect url in string
-            InputStream is = huc.getInputStream();
-            String redirectURL = huc.getURL().getPath();
-            is.close();
-            
+            InputStream is = null;
+            String redirectURL = "";
+            try{
+            	is = huc.getInputStream();
+            	redirectURL = huc.getURL().getPath();
+            	is.close();
+            }catch(IOException e){
+            	//e.printStackTrace();
+            }
             // checks if it is a redirect and return boolean value
             return redirectURL.contains("/r/");
 
@@ -42,7 +48,5 @@ public class SubRedditChecker {
             e.printStackTrace();
             return false;
         }
-
     }
-
 }

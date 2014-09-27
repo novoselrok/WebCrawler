@@ -5,6 +5,7 @@
  */
 package com.redditprog.webcrawler;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -18,6 +19,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.Scanner;
 /**
  *
  * @author Ryan
@@ -32,14 +34,15 @@ public class Extractor {
     private final String top_time;
     
     // Constructor
-    public Extractor(int num_pics, String sub, String dir, String top_time) {
-        this.num_pics = num_pics;
-        this.sub = sub;
-        this.dir = dir;
-        this.top_time = top_time;
+    public Extractor(Launcher launcher) {
+    	this.sub = launcher.getSub();
+    	this.num_pics = launcher.getNumPics();
+    	this.dir = launcher.getDir();
+    	this.top_time = launcher.getTopTime();
     }
 
     public void beginExtract() {
+    	//System.out.println("Your pictures will be saved in: " + this.dir);
         Document page;
         int i = 0;
         try {
@@ -85,8 +88,8 @@ public class Extractor {
 	                op.close();
 	                
 	                System.out.println("==================");
-	                System.out.println("Download #" + (i + 1) + " complete: " + link.attr("href"));
-	                System.out.println("File has been saved in: " + this.dir + tab[tab.length - 1]);
+	                System.out.println("Download #" + (i + 1) + " complete: " + link.text());
+	                System.out.println("Name of the file: " + tab[tab.length - 1]);
 	                
 	                i++;
 	            }
@@ -98,7 +101,22 @@ public class Extractor {
         }
         System.out.println("==================");
         System.out.println("Download finished!");
-        
+        System.out.println("==================");
+        System.out.println("Do you want to open " + this.dir + "\nin your File Explorer? (y/n)");
+        boolean isSelected = false;
+        Scanner s;
+        while(!isSelected){
+        	s = new Scanner(System.in);
+        	String openFolder = s.next();
+        	if(openFolder.equalsIgnoreCase("y") || openFolder.equalsIgnoreCase("yes")){
+        		openFolder();
+        		isSelected = true;
+        	}else if(openFolder.equalsIgnoreCase("n") || openFolder.equalsIgnoreCase("no")){
+        		isSelected = true;
+        	}else{
+        		System.out.println("Enter y or n");
+        	}
+        }
     }
     
     private static void savePicture(InputStream in, OutputStream op){
@@ -111,6 +129,15 @@ public class Extractor {
         } catch (IOException e) {
             System.out.println("An error occured while saving the picture.");
         }
+    }
+    
+    private void openFolder(){
+    	try {
+			Desktop.getDesktop().open(new File(this.dir));
+		} catch (IOException e) {
+			System.out.println("Ooops, looks like this folder doesn't exist :(");
+			e.printStackTrace();
+		}
     }
 
 
