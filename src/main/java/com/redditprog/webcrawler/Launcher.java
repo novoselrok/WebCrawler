@@ -10,6 +10,7 @@ public class Launcher {
     private String dir;
     private int num_pics;
     private String top_time;
+    private int statusSubReddit;
 
     public Launcher(Scanner scanner) {
         this.scanner = scanner;
@@ -20,9 +21,17 @@ public class Launcher {
         this.num_pics = this.getNumPics();
         this.top_time = this.getTopTime();
         this.dir = this.getDir();
+        
+        // default value
+        boolean isNsfw = false;
+        
+        // toggle value if the subReddit is NSFW
+        if (this.statusSubReddit == 2) {
+            isNsfw = true;
+        } 
 
         Extractor extractor = new Extractor(this.sub, this.num_pics,
-                this.dir, this.top_time, this.scanner);
+                this.dir, this.top_time, this.scanner, isNsfw);
         extractor.beginExtract();
     }
 
@@ -35,7 +44,23 @@ public class Launcher {
             System.out.println("What subbredit do you want to download from?");
             sub_temp = scanner.next();
 
-            isValid = SubRedditChecker.verifySubReddit(sub_temp);
+            this.statusSubReddit = SubRedditChecker.verifySubReddit(sub_temp);
+            
+            switch (statusSubReddit) {
+                case 0:
+                    isValid = false;
+                    break;
+                case 1:
+                    isValid = true;
+                    break;
+                case 2: 
+                    isValid = true;
+                    break;
+                default:
+                    isValid = false;
+                    break;
+            }
+            
             if (!isValid) {
                 System.out.println("No such subreddit exist! try again.\n\n");
             }

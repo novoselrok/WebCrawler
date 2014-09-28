@@ -1,10 +1,15 @@
-
 package com.redditprog.webcrawler;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 /**
  * @author Rok
@@ -12,8 +17,8 @@ import java.net.URL;
  */
 public class SubRedditChecker {
 
-    public static boolean verifySubReddit(String sub) {
-
+    public static int verifySubReddit(String sub) {
+        int isVerified = 0;
         try {
             // set the full url of the user input subreddit
             final URL url = new URL("http://reddit.com/r/" + sub);
@@ -30,16 +35,29 @@ public class SubRedditChecker {
             try {
                 is = huc.getInputStream();
                 redirectURL = huc.getURL().getPath();
+
+                if (redirectURL.contains("/r/")) {
+                    isVerified = 1;
+                } else {
+                    if (redirectURL.contains("over18")) {
+                        isVerified = 2;
+                    } else {
+                        isVerified = 0;
+                    }
+                }
+
                 is.close();
             } catch (IOException e) {
+                System.out.println(e);
                 //e.printStackTrace();
+                isVerified = 0;
             }
             // checks if it is a redirect and return boolean value
-            return redirectURL.contains("/r/");
+            return isVerified;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return 0;
         }
     }
 }
