@@ -1,15 +1,8 @@
 package com.redditprog.webcrawler;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 /**
  * @author Rok
@@ -17,8 +10,7 @@ import java.util.List;
  */
 public class SubRedditChecker {
 
-    public static int verifySubReddit(String sub) {
-        int isVerified = 0;
+    public static boolean verifySubReddit(String sub) {
         try {
             // set the full url of the user input subreddit
             final URL url = new URL("http://reddit.com/r/" + sub);
@@ -27,37 +19,17 @@ public class SubRedditChecker {
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 
             // connects to the http
-            huc.connect();
+            huc.setRequestMethod("HEAD");
 
-            // Extract the redirect url in string
-            InputStream is = null;
-            String redirectURL = "";
-            try {
-                is = huc.getInputStream();
-                redirectURL = huc.getURL().getPath();
+            // set timeout 5 sec
+            huc.setConnectTimeout(5000);
 
-                if (redirectURL.contains("/r/")) {
-                    isVerified = 1;
-                } else {
-                    if (redirectURL.contains("over18")) {
-                        isVerified = 2;
-                    } else {
-                        isVerified = 0;
-                    }
-                }
+            return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
 
-                is.close();
-            } catch (IOException e) {
-                System.out.println(e);
-                //e.printStackTrace();
-                isVerified = 0;
-            }
-            // checks if it is a redirect and return boolean value
-            return isVerified;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
+        } catch (java.net.SocketTimeoutException e) {
+            return false;
+        } catch (java.io.IOException e) {
+            return false;
         }
     }
 }

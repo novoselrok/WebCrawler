@@ -5,29 +5,31 @@
  */
 package com.redditprog.webcrawler;
 
+
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -40,10 +42,8 @@ public class Extractor {
     private final int num_pics;
     private final String sub;
     private final String dir;
-    private final String top_time;
+    private final String range;
     private final Scanner scanner;
-    private final boolean isNsfw;
-    private HtmlPage nsfwPage;
 
     /**
      * The class constructor with the following parameters:
@@ -56,208 +56,247 @@ public class Extractor {
      * @param statusSub Flag status to tell
      */
     public Extractor(String sub, int num, String dir,
-            String top_time, Scanner scanner, boolean statusSub) {
+            String top_time, Scanner scanner) {
         this.sub = sub;
         this.num_pics = num;
         this.dir = dir;
-        this.top_time = top_time;
+        this.range = top_time;
         this.scanner = scanner;
-        this.isNsfw = statusSub;
 
     }
 
     public void beginExtract() {
+
+        // set the full url of the user input subreddit
+        final URL urlSub, urlJson;
+
         try {
-            // set the full url of the user input subreddit
-            final URL url = new URL("http://reddit.com/r/" + this.sub);
+            urlSub = new URL("http://reddit.com/r/" + this.sub);
+            urlJson = new URL("http://www.reddit.com/r/" + this.sub + "/"
+                    + this.range + ".json");
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
 
-            // create a new connection
-            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+        String jsonString = this.extractJsonFromUrl(urlJson);
 
-            // connects to the http
-            huc.connect();
+        JSONObject obj;
+        JSONArray childArray;
+        int numDownloads = 0;
 
-            // Extract the redirect url in string
-            InputStream is;
-            String redirectURL;
-            try {
-                is = huc.getInputStream();
-                redirectURL = huc.getURL().getPath();
-                if (redirectURL.contains("/r/")) {
-                    this.downloadPhotos();
-                    return;
-                }
+        try {
+            obj = new JSONObject(jsonString);
 
-                if (redirectURL.contains("over18")) {
+            childArray = obj.getJSONObject("data").getJSONArray("children");
 
-                    WebClient aWebClient = new WebClient(BrowserVersion.CHROME);
-                    aWebClient.getOptions().setJavaScriptEnabled(false);
-
-                    System.out.println(huc.getURL());
-                    // Get the first page
-                    final HtmlPage page1 = aWebClient.getPage(huc.getURL());
-
-                    // Get the form that we are dealing with and within that form, 
-                    // find the submit button and the field that we want to change.
-                    List<HtmlForm> listOfForms = page1.getForms();
-
-                    System.out.println("Entering WebClient mode...");
-                    for (HtmlForm a : listOfForms) {
-                        if (a.getAttribute("action").isEmpty()) {
-                            List<HtmlButton> listOfButtons = a.getButtonsByName("over18");
-                            for (HtmlButton aButton : listOfButtons) {
-                                if (aButton.getAttribute("value").contains("yes")) {
-                                    final HtmlPage anHtmlPage = aButton.click();
-
-                                    this.downloadPhotosByWebClient(anHtmlPage);
-                                    // for debugging only (do not delete)
-                                    //System.out.println(nextPage.getUrl());
-                                    break;
-                                }
-
-                            }
-                            break;
-                        }
-
+            mainloop:
+            for (int i = 0; i < childArray.length(); i++) {
+                String urlString = "";
+                
+                if (childArray.getJSONObject(i)
+                        .getJSONObject("data").has("url")) {
+                    urlString = childArray.getJSONObject(i)
+                        .getJSONObject("data").getString("url");
+                } else  {
+                    if (childArray.getJSONObject(i)
+                        .getJSONObject("data").has("link_url")) {
+                        urlString = childArray.getJSONObject(i)
+                        .getJSONObject("data").getString("link_url");
                     }
-                    aWebClient.closeAllWindows();
-
-                } else {
                 }
-                is.close();
+                
+                
+                if (urlString.contains("imgur")) {
+                    URL url = new URL(urlString);
 
-            } catch (Exception e) {
+                    if (urlString.substring(urlString.lastIndexOf("/"))
+                            .contains(".")) {
+                        numDownloads = this.extractImgurSingle(numDownloads, url);
 
-            }
-        } catch (Exception e) {
-        }
-    }
+                    } else {
+                        numDownloads = this.extractImgurAlbum(numDownloads, url);
+                    }
 
-    private void downloadPhotosByWebClient(HtmlPage aHtmlPage) throws IOException {
-        HtmlImage image;
-        final List<?> images = aHtmlPage.getByXPath("//img");
-        int numTitle = 0;
-        int counter = 0;
-
-        if (images.size() - 1 < this.num_pics) {
-            System.out.println("far too many request");
-        }
-
-        for (Object imageObject : images) {
-            if (numTitle == 0) {
-                numTitle += 1;
-                counter += 1;
-                continue;
-            }
-            
-            image = (HtmlImage) imageObject;
-            
-            // Create new arbritrary file to save photo later
-            File file = new File(this.dir + Integer.toString(numTitle) + "."
-                    + image.getImageReader().getFormatName().toLowerCase());
-            
-            while (file.exists()) {
-                numTitle += 1;
-                file = new File(this.dir + Integer.toString(numTitle) + "."
-                    + image.getImageReader().getFormatName().toLowerCase());
-            }
-            
-            
-            image.saveAs(file);
-            
-            numTitle += 1;
-
-            System.out.println("==================");
-            System.out.println("Download #" + counter + " complete:");
-            System.out.println("Name of the file: " + file.getPath());
-
-            if (this.num_pics == counter) {
-                break;
-            }
-            counter += 1;
-        }
-        
-        this.askUserToOpenFolder();
-    }
-
-    private void downloadPhotos() {
-        //System.out.println("Your pictures will be saved in: " + this.dir);
-        System.out.println("Entering JSOUP area....");
-
-        Document page;
-        int i = 0;
-        try {
-            String url = "http://www.reddit.com/r/" + this.sub + "/top/?sort=top&t=" + this.top_time;
-            System.out.println(url);
-            while (i != this.num_pics) {
-
-                page = Jsoup.connect(url).get();
-                String next_page = page.select("a[rel=nofollow next]").attr("href");
-
-                //Selecting all the elements with HTML class "title", 
-                //that have nested inside <a href="..">..</a> tags
-                //that end with jpg or png
-                Elements images = page.select(".title").select("a[href$=jpg], a[href$=png]");
-
-                if (images.isEmpty()) {
-                    System.out.println("empty images");
-                }
-                for (Element link : images) {
-
-                    if (i == this.num_pics) {
+                    if (numDownloads == this.num_pics) {
                         break;
                     }
 
-                    //Saving the url of the picture
-                    URL addr = new URL(link.attr("href"));
-                    InputStream in = addr.openStream();
-                    OutputStream op = null;
-                    String[] tab = link.attr("href").split("/");
-
-                    if (new File(this.dir + tab[tab.length - 1]).exists()) {
-                        System.out.println("File [" + (this.dir + tab[tab.length - 1]) + "] already exists.\nAnother picture will be downloaded instead.");
-                        continue;
-                    }
-
-                    try {
-                        op = new FileOutputStream(this.dir + tab[tab.length - 1]);
-                    } catch (FileNotFoundException e) {
-                        System.out.println("You have entered an invalid path. Shutting down...");
-                        System.exit(-1);
-                    }
-
-                    //Saving the picture to the file
-                    savePicture(in, op);
-
-                    in.close();
-                    op.close();
-
-                    System.out.println("==================");
-                    System.out.println("Download #" + (i + 1) + " complete: " + link.text());
-                    System.out.println("Name of the file: " + tab[tab.length - 1]);
-
-                    i++;
                 }
-                //Here we substitute the original url, with the next page one
-                url = next_page;
+
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (JSONException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         }
 
-        this.askUserToOpenFolder();
+        if (numDownloads > 0) {
+            if (numDownloads < this.num_pics) {
+                System.out.println("=================================");
+                System.out.println("There are no more pictures found.");
+                System.out.println("=================================");
+            }
+            this.askUserToOpenFolder();
+        } else {
+            System.out.println("==================");
+            System.out.println("No Pictures found!");
+            System.out.println("==================");
+        }
+
     }
 
-    private static void savePicture(InputStream in, OutputStream op) {
-        byte[] b = new byte[20480];
+    private int extractImgurSingle(int numDownloads, URL url) {
+
+        String fileName = url.getFile();
+        String destName = this.dir + fileName.substring(fileName.lastIndexOf("/")+1);
+
+        InputStream is;
+        OutputStream os;
         try {
+            is = url.openStream();
+            os = new FileOutputStream(destName);
+            byte[] b = new byte[2048];
             int length;
-            while ((length = in.read(b)) != -1) {
-                op.write(b, 0, length);
+
+            while ((length = is.read(b)) != -1) {
+                os.write(b, 0, length);
             }
-        } catch (IOException e) {
-            System.out.println("An error occured while saving the picture.");
+
+            is.close();
+            os.close();
+
+            this.printDownloadCompleted(numDownloads, destName);
+        } catch (IOException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return numDownloads + 1;
+    }
+
+    private int extractImgurAlbum(int numDownloads, URL url) {
+        HtmlPage imgurPage;
+        HtmlImage image;
+
+        // create a new connection
+        HttpURLConnection huc;
+        try {
+            huc = (HttpURLConnection) url.openConnection();
+            // connects to the http
+            huc.connect();
+            WebClient aWebClient = new WebClient(BrowserVersion.CHROME);
+            aWebClient.getOptions().setJavaScriptEnabled(false);
+            imgurPage = aWebClient.getPage(url);
+
+            final List<?> images = imgurPage.getByXPath("//img");
+
+            int numTitle = 1;
+            String imageSrc;
+
+            for (Object imageObject : images) {
+                // Typecast to HtmlImage
+                image = (HtmlImage) imageObject;
+
+                imageSrc = image.getAttribute("src");
+
+                // If the object found is not jpeg, jpg or png filetype, 
+                // move to next object
+                if (!imageSrc.contains(".")) {
+                    continue;
+                }
+                if (!((imageSrc.contains(".jpeg"))
+                        || (imageSrc.contains(".jpg"))
+                        || (imageSrc.contains(".png")))) {
+                    continue;
+                }
+
+                // Bypass any non-user submitted photo (e.g. website layout image)
+                if (image.getHeight() < 200){
+                    continue;
+                }
+
+                // Create new arbritrary file to save photo later
+                File file;
+                try {
+                    file = new File(this.dir
+                            + imageSrc.substring(imageSrc.lastIndexOf("/")+1));
+
+                    while (file.exists()) {
+                        numTitle += 1;
+                        file = new File(this.dir
+                            + numTitle + imageSrc.substring(imageSrc.lastIndexOf(".")));
+                    }
+
+                    image.saveAs(file);
+
+                    numTitle += 1;
+
+                    this.printDownloadCompleted(numDownloads, file.getPath());
+                   
+
+                    if (this.num_pics == numDownloads) {
+                        break;
+                    }
+                    numDownloads += 1;
+
+                    if (numDownloads == this.num_pics) {
+                        break;
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(1);
+                }
+                numTitle += 1;
+            }
+
+            aWebClient.closeAllWindows();
+        } catch (IOException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+
+        return numDownloads;
+    }
+    
+    private void filterPhoto() {
+        
+    }
+
+    private void printDownloadCompleted(int num, String path) {
+        System.out.println("==================");
+        System.out.println("Download #" + (num + 1) + " complete:");
+        System.out.println("Name of the file: " + path);
+    }
+
+    private String extractJsonFromUrl(URL url) {
+        BufferedReader reader = null;
+        try {
+
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            StringBuffer buffer = new StringBuffer();
+            int read;
+            char[] chars = new char[1024];
+            while ((read = reader.read(chars)) != -1) {
+                buffer.append(chars, 0, read);
+            }
+
+            return buffer.toString();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return "";
     }
 
     private void openFolder() {
@@ -278,7 +317,7 @@ public class Extractor {
         while (!isSelected) {
             String openFolder = this.scanner.next();
             if (openFolder.equalsIgnoreCase("y") || openFolder.equalsIgnoreCase("yes")) {
-                openFolder();
+                this.openFolder();
                 isSelected = true;
             } else if (openFolder.equalsIgnoreCase("n") || openFolder.equalsIgnoreCase("no")) {
                 isSelected = true;
