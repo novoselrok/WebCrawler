@@ -1,5 +1,8 @@
 package com.redditprog.webcrawler;
 
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Launcher {
@@ -9,8 +12,7 @@ public class Launcher {
     private String sub;
     private String dir;
     private int num_pics;
-    private String top_time;
-    private int statusSubReddit;
+    private String range;
 
     public Launcher(Scanner scanner) {
         this.scanner = scanner;
@@ -19,19 +21,11 @@ public class Launcher {
     public void start() {
         this.sub = this.getSub();
         this.num_pics = this.getNumPics();
-        this.top_time = this.getTopTime();
+        this.range = this.getTopTime();
         this.dir = this.getDir();
         
-        // default value
-        boolean isNsfw = false;
-        
-        // toggle value if the subReddit is NSFW
-        if (this.statusSubReddit == 2) {
-            isNsfw = true;
-        } 
-
         Extractor extractor = new Extractor(this.sub, this.num_pics,
-                this.dir, this.top_time, this.scanner, isNsfw);
+                this.dir, this.range, this.scanner);
         extractor.beginExtract();
     }
 
@@ -44,22 +38,7 @@ public class Launcher {
             System.out.println("What subbredit do you want to download from?");
             sub_temp = scanner.next();
 
-            this.statusSubReddit = SubRedditChecker.verifySubReddit(sub_temp);
-            
-            switch (statusSubReddit) {
-                case 0:
-                    isValid = false;
-                    break;
-                case 1:
-                    isValid = true;
-                    break;
-                case 2: 
-                    isValid = true;
-                    break;
-                default:
-                    isValid = false;
-                    break;
-            }
+            isValid = SubRedditChecker.verifySubReddit(sub_temp);
             
             if (!isValid) {
                 System.out.println("No such subreddit exist! try again.\n\n");
@@ -72,7 +51,7 @@ public class Launcher {
         String dir_temp = "";
         boolean isSelectedDir = false;
         while (!isSelectedDir) {
-            System.out.println("Do you want to save in the default folder? y(es)/n(o)");
+            System.out.println("Do you want to save in the default folder? (y)es/(n)o");
             String answer = scanner.next().toLowerCase();
 
             if (answer.equals("y") || answer.equals("yes")) {
@@ -94,23 +73,37 @@ public class Launcher {
 
                 isSelectedDir = true;
             } else {
-                System.out.println("Invalid answer. Please answer y(es) or n(o).");
+                System.out.println("Invalid answer. Please answer (y)es or (n)o.");
             }
         }
         return dir_temp;
     }
 
     private String getTopTime() {
+         // Immutable ArrayList of options
+        List<String> listOfOptions = Arrays.asList("hot", 
+                "new", "rising", "controversial", "top", "gilded", "promoted");
+        boolean isAcceptable = false;
+        
         // Ask user for range of links for a  subreddit
-        System.out.println("Top links from which period: hour, day, week, month, year, all");
+        System.out.println("Images from which period: hot, new, rising, "
+                + "controversial, top, gilded or promoted?");
         String top_time_temp = scanner.next();
-
-        // If top_time is not set to any of the choices except "all", then
-        // the value is set to "all" by default
-        if (!(top_time_temp.contains("hour") || top_time_temp.contains("day") || top_time_temp.contains("week")
-                || top_time_temp.contains("month") || top_time_temp.contains("year"))) {
-            top_time_temp = "all";
+       
+        // Force user to enter valid input
+        while (!isAcceptable) {
+            for (String choice: listOfOptions){
+                if (top_time_temp.equals(choice)) {
+                    isAcceptable = true;
+                }
+            }
+            
+            if (!isAcceptable) {
+                System.out.println("Invalid choice! Please try again: ");
+                top_time_temp = scanner.next();
+            }
         }
+        
 
         return top_time_temp;
     }

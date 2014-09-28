@@ -23,7 +23,7 @@ public class App {
 
             String reply;
             while (true) {
-                System.out.print("Do you want to extract more photos?(y/n): ");
+                System.out.print("Do you want to start again?(y/n): ");
                 reply = scanner.next();
 
                 if ((reply.equalsIgnoreCase("y")) || (reply.equalsIgnoreCase("n"))) {
