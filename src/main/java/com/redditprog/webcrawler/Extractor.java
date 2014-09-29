@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.redditprog.webcrawler;
 
 
@@ -53,7 +49,6 @@ public class Extractor {
      * @param dir Directory path to save photos
      * @param top_time Range of Date/Time for the subreddit
      * @param scanner Scanner object pass from Launcher
-     * @param statusSub Flag status to tell
      */
     public Extractor(String sub, int num, String dir,
             String top_time, Scanner scanner) {
@@ -99,6 +94,7 @@ public class Extractor {
                     urlString = childArray.getJSONObject(i)
                         .getJSONObject("data").getString("url");
                 } else  {
+                    // Gilded range change the Data's url child to link_url
                     if (childArray.getJSONObject(i)
                         .getJSONObject("data").has("link_url")) {
                         urlString = childArray.getJSONObject(i)
@@ -151,6 +147,7 @@ public class Extractor {
     private int extractImgurSingle(int numDownloads, URL url) {
 
         String fileName = url.getFile();
+        // + 1 because this.dir already got "/" as the last character
         String destName = this.dir + fileName.substring(fileName.lastIndexOf("/")+1);
 
         InputStream is;
@@ -167,13 +164,15 @@ public class Extractor {
 
             is.close();
             os.close();
-
+            
             this.printDownloadCompleted(numDownloads, destName);
+            return numDownloads + 1;
         } catch (IOException ex) {
             Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            return numDownloads;
         }
 
-        return numDownloads + 1;
+        
     }
 
     private int extractImgurAlbum(int numDownloads, URL url) {
