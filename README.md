@@ -74,7 +74,7 @@ ChangeLog
 - Download the top pictures of any (existing) subreddit
 - It supports as many pictures as you want
 - Select top links from this day, week, month, year or all time best
-- 
+
 
 <br/>
 License
