@@ -9,6 +9,7 @@ release.properties
 .classpath
 .project
 .settings/
+src/main/java/com/redditprog/webcrawler/ClientIDClass.java
 
 # =========================
 # Operating System Files

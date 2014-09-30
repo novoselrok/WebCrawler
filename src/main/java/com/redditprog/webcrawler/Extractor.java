@@ -205,8 +205,8 @@ public class Extractor {
 	}
 
 	private int extractImgurAlbum(int numDownloads, URL url) {
-		String Client_ID = "6e4aad85ecee137";
-		String Client_Secret = "9f6c50ff4fca8f076a83db05fc4799e84e4e8c3b";
+		String Client_ID = ClientIDClass.CLIENT_ID;
+		
 		String[] url_s = url.toString().split("/");
 
 		JSONObject obj;
