@@ -55,11 +55,11 @@ Rough TODO List
 Roadmap
 -------
 
-- build on top of GUI of some sort
-- better preformance
-- more filters
-- add search functionality
-- support for static gif files
+- Build on top of GUI of some sort
+- Better preformance
+- More filters
+- Add search functionality
+- Support for static gif files
 
 <br/>
 Collaboration
@@ -70,7 +70,7 @@ Feel free to open an issue, if you want to fix any bugs or throw a suggestion.
 ChangeLog
 ---------
 
-###v0.1.1
+###v0.1-alpha
 - Download the top pictures of any (existing) subreddit
 - It supports as many pictures as you want
 - Select top links from this day, week, month, year or all time best
