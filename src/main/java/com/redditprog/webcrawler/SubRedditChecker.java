@@ -1,8 +1,12 @@
 package com.redditprog.webcrawler;
 
-
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author Rok
@@ -10,26 +14,36 @@ import java.net.URL;
  */
 public class SubRedditChecker {
 
-    public static boolean verifySubReddit(String sub) {
-        try {
-            // set the full url of the user input subreddit
-            final URL url = new URL("http://reddit.com/r/" + sub);
+	public static boolean verifySubReddit(String sub) {
+		int children_array_length = 0;
+		try {
+			// set the full url of the user input subreddit
+			final URL url = new URL("http://reddit.com/r/" + sub + ".json");
 
-            // create a new connection
-            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-            // connects to the http
-            huc.setRequestMethod("HEAD");
+			BufferedReader bin = null;
+			bin = new BufferedReader(new InputStreamReader(
+					conn.getInputStream()));
+			StringBuilder jsonString = new StringBuilder();
 
-            // set timeout 5 sec
-            huc.setConnectTimeout(5000);
+			// below will print out bin
+			String line;
+			while ((line = bin.readLine()) != null)
+				jsonString.append(line);
 
-            return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+			bin.close();
+			JSONObject obj = new JSONObject(jsonString.toString());
+			children_array_length = obj.getJSONObject("data")
+					.getJSONArray("children").length();
 
-        } catch (java.net.SocketTimeoutException e) {
-            return false;
-        } catch (java.io.IOException e) {
-            return false;
-        }
-    }
+		} catch (java.net.SocketTimeoutException e) {
+			return false;
+		} catch (java.io.IOException e) {
+			return false;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return !(children_array_length == 0);
+	}
 }

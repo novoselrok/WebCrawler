@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Launcher {
-
+	private final static int MAX_PICS = 500; 
 	private final String OS = System.getProperty("os.name");
 	private final Scanner scanner;
 	private String sub;
@@ -91,12 +91,12 @@ public class Launcher {
 	private String getTypeOfLinks() {
 		// Immutable ArrayList of options
 		List<String> listOfOptions = Arrays.asList("hot", "new", "rising",
-				"controversial", "top", "gilded", "promoted");
+				"controversial", "top", "gilded");
 		boolean isAcceptable = false;
 
 		// Ask user for range of links for a subreddit
 		System.out.println("Images from which period: hot, new, rising, "
-				+ "controversial, top, gilded or promoted?");
+				+ "controversial, top or gilded?");
 		String type_of_links_temp = scanner.next();
 
 		// Force user to enter valid input
@@ -139,8 +139,13 @@ public class Launcher {
 			System.out.println("That is not a valid number. Please try again.");
 			scanner.next();
 		}
-
-		int num_pics_temp = scanner.nextInt();
+		int num_pics_temp = 0;
+		
+		while(true){
+			num_pics_temp = scanner.nextInt();
+			if(num_pics_temp < 500) break;
+			else System.out.println("You can't download more than 500 pictures. Enter again.");
+		}
 		return num_pics_temp;
 	}
 }

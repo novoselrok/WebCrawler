@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -118,33 +117,31 @@ public class Extractor {
 					}
 
 					URL url = new URL(urlString);
-					if(urlString.contains("imgur")){
+					if (urlString.contains("imgur")) {
 						if (urlString.contains("imgur.com/a/")) {
-							
-							//System.out.println("Album detected! Do you wish to download it?");
-							
-							numDownloads = this
-									.extractImgurAlbum(numDownloads, url);
+							numDownloads = this.extractImgurAlbum(numDownloads,
+									url);
 						} else {
-	
+
 							if (urlString.contains("i.imgur.com")) {
 								url = new URL(urlString);
 							} else {
 								urlString = urlString.replace("imgur", "i.imgur");
-								System.out.println(urlString);
 								url = new URL(urlString + ".png");
 							}
-	
-							numDownloads = this.extractImgurSingle(numDownloads,
+
+							numDownloads = this.extractSingle(numDownloads,
 									url, "single");
 						}
-					}else{
-						if(urlString.endsWith("jpg") || urlString.endsWith("png") || urlString.endsWith("jpeg")){
-							numDownloads = this.extractImgurSingle(numDownloads,
-								url, "single");
+					} else {
+						if (urlString.endsWith("jpg")
+								|| urlString.endsWith("png")
+								|| urlString.endsWith("jpeg")) {
+							numDownloads = this.extractSingle(numDownloads,
+									url, "single");
 						}
 					}
-					
+
 					if (numDownloads >= this.num_pics) {
 						break;
 					}
@@ -156,11 +153,11 @@ public class Extractor {
 				} else {
 					json_url += "?count=" + count + "&after=" + after;
 				}
-				//System.out.println("JSONURL= " + json_url + "NUMDOWNLOADS= " + numDownloads);
 				urlJson = new URL(json_url);
 				count += 25;
-				if(count >= 500 && numDownloads <= this.num_pics){
-					System.out.println("There weren't enough pictures for your request.");
+				if (count >= 1000 && numDownloads <= this.num_pics) {
+					System.out
+							.println("There weren't enough pictures for your request.");
 					break;
 				}
 			} catch (JSONException ex) {
@@ -179,17 +176,23 @@ public class Extractor {
 		}
 	}
 
-	private int extractImgurSingle(int numDownloads, URL url, String new_map) {
+	private int extractSingle(int numDownloads, URL url, String new_map) {
 
 		String fileName = url.getFile();
 		// + 1 because this.dir already got "/" as the last character
-		String destName;
-		if(new_map.equals("single")){
-			destName = this.dir + fileName.substring(fileName.lastIndexOf("/") + 1);
-		}else{			
-			destName = this.dir + new_map + File.separator + fileName.substring(fileName.lastIndexOf("/") + 1);			
+		String destName = "";
+		if (new_map.equals("single")) {
+			destName = this.dir
+					+ fileName.substring(fileName.lastIndexOf("/") + 1);
+		} else {
+			destName = this.dir + new_map + File.separator
+					+ fileName.substring(fileName.lastIndexOf("/") + 1);
 		}
-		System.out.println(destName);
+		
+		if(destName.contains("?")){
+			destName = destName.substring(0, destName.length() - 2);
+		}
+
 		InputStream is;
 		OutputStream os;
 		try {
@@ -217,18 +220,14 @@ public class Extractor {
 
 	private int extractImgurAlbum(int numDownloads, URL url) {
 		String Client_ID = ClientIDClass.CLIENT_ID;
-		
+
 		String[] urlSplit = url.toString().split("/");
 		String url_s = urlSplit[urlSplit.length - 1];
-		
-		
-		
 		JSONObject obj;
 		JSONArray images_array;
-		
+
 		try {
-			URL jsonUrl = new URL("https://api.imgur.com/3/album/"
-					+ url_s);
+			URL jsonUrl = new URL("https://api.imgur.com/3/album/" + url_s);
 
 			HttpURLConnection conn = (HttpURLConnection) jsonUrl
 					.openConnection();
@@ -239,7 +238,7 @@ public class Extractor {
 			bin = new BufferedReader(new InputStreamReader(
 					conn.getInputStream()));
 			StringBuilder jsonString = new StringBuilder();
-			
+
 			// below will print out bin
 			String line;
 			while ((line = bin.readLine()) != null)
@@ -250,23 +249,28 @@ public class Extractor {
 			obj = new JSONObject(jsonString.toString());
 			images_array = obj.getJSONObject("data").getJSONArray("images");
 			String album_title = obj.getJSONObject("data").getString("title");
-			int album_num_pics = obj.getJSONObject("data").getInt("images_count");
-			System.out.println("An album detected! Title is: " + album_title + " Number of pics: " + album_num_pics);
+			int album_num_pics = obj.getJSONObject("data").getInt(
+					"images_count");
+			System.out.println("An album detected! Title is: " + album_title
+					+ " Number of pics: " + album_num_pics);
 			System.out.println("Do you want to download it? (Yes or No)");
 			String response = "";
-			while(true){
+			while (true) {
 				response = scanner.next();
-				if(response.equals("y") || response.equals("yes") || response.equals("n") ||  
-						response.equals("no")) break;
+				if (response.equals("y") || response.equals("yes")
+						|| response.equals("n") || response.equals("no"))
+					break;
 			}
-			if(response.equals("y") || response.equals("yes")){
+			if (response.equals("y") || response.equals("yes")) {
 				new File(this.dir + url_s + File.separator).mkdir();
 				for (int i = 0; i < images_array.length(); i++) {
-					numDownloads = extractImgurSingle(numDownloads, new URL(
-							images_array.getJSONObject(i).getString("link")), url_s);
+					numDownloads = extractSingle(numDownloads, new URL(
+							images_array.getJSONObject(i).getString("link")),
+							url_s);
 				}
-			}else return numDownloads;
-			
+			} else
+				return numDownloads;
+
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
