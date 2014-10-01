@@ -143,7 +143,7 @@ public class Launcher {
 		
 		while(true){
 			num_pics_temp = scanner.nextInt();
-			if(num_pics_temp < 500) break;
+			if(num_pics_temp < MAX_PICS) break;
 			else System.out.println("You can't download more than 500 pictures. Enter again.");
 		}
 		return num_pics_temp;
