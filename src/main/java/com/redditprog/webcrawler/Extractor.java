@@ -177,6 +177,8 @@ public class Extractor {
 			destName = destName.substring(0, destName.length() - 2);
 		}
 
+		//Skip the download if the file already exists. Imgur has unique ID images so it is a duplicate.
+		if(fileAlreadyExists(destName)) return numDownloads + 1;
 		InputStream is;
 		OutputStream os;
 		try {
@@ -296,6 +298,11 @@ public class Extractor {
 		}
 	}
 
+	private boolean fileAlreadyExists(String destName) {
+		File file = new File(destName);
+		return file.exists();
+	}
+	
 	private void askUserToOpenFolder() {
 		System.out.println("==================");
 		System.out.println("Download finished!");
