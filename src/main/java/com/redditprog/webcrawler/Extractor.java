@@ -102,7 +102,9 @@ public class Extractor {
 								url = new URL(urlString);
 							} else {
 								urlString = urlString.replace("imgur", "i.imgur");
-								url = new URL(urlString + ".gif");
+								//
+								if(this.sub.contains("gif")) url = new URL(urlString + ".gif");
+								else url = new URL(urlString + ".png");
 							}
 							numDownloads = this.extractSingle(numDownloads, url, "single");
 						}
