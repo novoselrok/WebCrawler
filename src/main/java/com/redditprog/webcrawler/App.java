@@ -13,11 +13,11 @@ public class App {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean isFinished = false;
-        //We're not 1.0 yet :D
+        
         System.out.println("Reddit Photo Extractor v0.1-alpha");
         Launcher launcher;
         while (!isFinished) {
-            //askUser(scanner);
+        	
             launcher = new Launcher(scanner);
             launcher.start();
 

@@ -57,8 +57,7 @@ public class Launcher {
 		String dir_temp = "";
 		boolean isSelectedDir = false;
 		while (!isSelectedDir) {
-			System.out
-					.println("Do you want to save in the default folder? (y)es/(n)o");
+			System.out.println("Do you want to save in the default folder? (y)es/(n)o");
 			String answer = scanner.next().toLowerCase();
 
 			if (answer.equals("y") || answer.equals("yes")) {
@@ -70,8 +69,7 @@ public class Launcher {
 
 				isSelectedDir = true;
 			} else if (answer.equals("n") || answer.equals("no")) {
-				System.out
-						.println("Enter the path you want to save the pictures in: ");
+				System.out.println("Enter the path you want to save the pictures in: ");
 				dir_temp = scanner.next();
 				if (!dir_temp.endsWith("\\") && OS.startsWith("Windows")) {
 					dir_temp += "\\";
@@ -117,15 +115,13 @@ public class Launcher {
 
 	private String getTopTime() {
 		// Ask user for range of links for a subreddit
-		System.out
-				.println("Top links from which period: hour, day, week, month, year, all");
+		System.out.println("Top links from which period: hour, day, week, month, year, all");
 		String top_time = scanner.next();
 
 		// If top_time is not set to any of the choices except "all", then
 		// the value is set to "all" by default
 		if (!(top_time.contains("hour") || top_time.contains("day")
-				|| top_time.contains("week") || top_time.contains("month") || top_time
-					.contains("year"))) {
+			|| top_time.contains("week") || top_time.contains("month") || top_time.contains("year"))) {
 			top_time = "all";
 		}
 

@@ -23,8 +23,7 @@ public class SubRedditChecker {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 			BufferedReader bin = null;
-			bin = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
+			bin = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			StringBuilder jsonString = new StringBuilder();
 
 			// below will print out bin
@@ -34,9 +33,7 @@ public class SubRedditChecker {
 
 			bin.close();
 			JSONObject obj = new JSONObject(jsonString.toString());
-			children_array_length = obj.getJSONObject("data")
-					.getJSONArray("children").length();
-
+			children_array_length = obj.getJSONObject("data").getJSONArray("children").length();
 		} catch (java.net.SocketTimeoutException e) {
 			return false;
 		} catch (java.io.IOException e) {

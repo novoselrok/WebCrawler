@@ -38,16 +38,11 @@ public class Extractor {
 	/**
 	 * The class constructor with the following parameters:
 	 *
-	 * @param sub
-	 *            SubReddit name
-	 * @param num
-	 *            Number of pictures to extract
-	 * @param dir
-	 *            Directory path to save photos
-	 * @param top_time
-	 *            Range of Date/Time for the subreddit
-	 * @param scanner
-	 *            Scanner object pass from Launcher
+	 * @param sub SubReddit name
+	 * @param num Number of pictures to extract
+	 * @param dir Directory path to save photos
+	 * @param top_time Range of Date/Time for the subreddit
+	 * @param scanner Scanner object pass from Launcher
 	 */
 	public Extractor(String sub, int num, String dir, String type_of_links,
 			String top_time, Scanner scanner) {
@@ -61,7 +56,6 @@ public class Extractor {
 	}
 
 	public void beginExtract() {
-
 		// set the full url of the user input subreddit
 		URL urlJson;
 		String json_url;
@@ -76,12 +70,10 @@ public class Extractor {
 			} else {
 				json_url = "http://www.reddit.com/r/" + this.sub + "/"
 						+ this.type_of_links + "/.json";
-
 			}
 			urlJson = new URL(json_url);
 		} catch (MalformedURLException ex) {
-			Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null,
-					ex);
+			Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null,	ex);
 			return;
 		}
 
@@ -97,48 +89,28 @@ public class Extractor {
 				obj = new JSONObject(jsonString);
 				String after = obj.getJSONObject("data").getString("after");
 				childArray = obj.getJSONObject("data").getJSONArray("children");
-
-				// mainloop:
+				
 				for (int i = 0; i < childArray.length(); i++) {
-					String urlString = "";
-
-					if (childArray.getJSONObject(i).getJSONObject("data")
-							.has("url")) {
-						urlString = childArray.getJSONObject(i)
-								.getJSONObject("data").getString("url");
-					} else {
-						// Gilded range change the Data's url child to link_url
-						if (childArray.getJSONObject(i).getJSONObject("data")
-								.has("link_url")) {
-							urlString = childArray.getJSONObject(i)
-									.getJSONObject("data")
-									.getString("link_url");
-						}
-					}
-
+					String urlString = this.getImageURL(childArray, i);					
 					URL url = new URL(urlString);
+					
 					if (urlString.contains("imgur")) {
 						if (urlString.contains("imgur.com/a/")) {
-							numDownloads = this.extractImgurAlbum(numDownloads,
-									url);
+							numDownloads = this.extractImgurAlbum(numDownloads, url);
 						} else {
-
 							if (urlString.contains("i.imgur.com")) {
 								url = new URL(urlString);
 							} else {
 								urlString = urlString.replace("imgur", "i.imgur");
 								url = new URL(urlString + ".png");
 							}
-
-							numDownloads = this.extractSingle(numDownloads,
-									url, "single");
+							numDownloads = this.extractSingle(numDownloads, url, "single");
 						}
 					} else {
 						if (urlString.endsWith("jpg")
 								|| urlString.endsWith("png")
 								|| urlString.endsWith("jpeg")) {
-							numDownloads = this.extractSingle(numDownloads,
-									url, "single");
+							numDownloads = this.extractSingle(numDownloads, url, "single");
 						}
 					}
 
@@ -156,40 +128,50 @@ public class Extractor {
 				urlJson = new URL(json_url);
 				count += 25;
 				if (count >= 1000 && numDownloads <= this.num_pics) {
-					System.out
-							.println("There weren't enough pictures for your request.");
+					System.out.println("There weren't enough pictures for your request.");
 					break;
 				}
 			} catch (JSONException ex) {
-				Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE,
-						null, ex);
+				Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (MalformedURLException ex) {
-				Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE,
-						null, ex);
+				Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
 			}
 
 			if (this.num_pics <= numDownloads) {
 				this.askUserToOpenFolder();
 				break;
 			}
-
 		}
+	}
+	
+	private String getImageURL(JSONArray childArray, int iteration){
+		String urlString = null;
+		try {
+			if (childArray.getJSONObject(iteration).getJSONObject("data").has("url")) {
+				urlString = childArray.getJSONObject(iteration).getJSONObject("data").getString("url");
+			} else if(childArray.getJSONObject(iteration).getJSONObject("data").has("link_url")){
+				// Gilded range change the Data's url child to link_url
+				urlString = childArray.getJSONObject(iteration).getJSONObject("data").getString("link_url");
+			}else{
+				urlString = "";
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return urlString;
 	}
 
 	private int extractSingle(int numDownloads, URL url, String new_map) {
-
 		String fileName = url.getFile();
 		// + 1 because this.dir already got "/" as the last character
 		String destName = "";
 		if (new_map.equals("single")) {
-			destName = this.dir
-					+ fileName.substring(fileName.lastIndexOf("/") + 1);
+			destName = this.dir + fileName.substring(fileName.lastIndexOf("/") + 1);
 		} else {
-			destName = this.dir + new_map + File.separator
-					+ fileName.substring(fileName.lastIndexOf("/") + 1);
+			destName = this.dir + new_map + File.separator + fileName.substring(fileName.lastIndexOf("/") + 1);
 		}
-		
-		if(destName.contains("?")){
+
+		if (destName.contains("?")) {
 			destName = destName.substring(0, destName.length() - 2);
 		}
 
@@ -229,17 +211,13 @@ public class Extractor {
 		try {
 			URL jsonUrl = new URL("https://api.imgur.com/3/album/" + url_s);
 
-			HttpURLConnection conn = (HttpURLConnection) jsonUrl
-					.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) jsonUrl.openConnection();
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Authorization", "Client-ID " + Client_ID);
 
-			BufferedReader bin = null;
-			bin = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
+			BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream()));;			
 			StringBuilder jsonString = new StringBuilder();
-
-			// below will print out bin
+			
 			String line;
 			while ((line = bin.readLine()) != null)
 				jsonString.append(line);
@@ -247,13 +225,14 @@ public class Extractor {
 			bin.close();
 
 			obj = new JSONObject(jsonString.toString());
+			
 			images_array = obj.getJSONObject("data").getJSONArray("images");
 			String album_title = obj.getJSONObject("data").getString("title");
-			int album_num_pics = obj.getJSONObject("data").getInt(
-					"images_count");
-			System.out.println("An album detected! Title is: " + album_title
-					+ " Number of pics: " + album_num_pics);
-			System.out.println("Do you want to download it? (Yes or No)");
+			int album_num_pics = obj.getJSONObject("data").getInt("images_count");
+			
+			System.out.println("An album detected! Title is: " + album_title + " Number of pics: " + album_num_pics);		
+			System.out.println("Do you want to download it? (yes or no)");
+			
 			String response = "";
 			while (true) {
 				response = scanner.next();
@@ -268,8 +247,7 @@ public class Extractor {
 							images_array.getJSONObject(i).getString("link")),
 							url_s);
 				}
-			} else
-				return numDownloads;
+			} else return numDownloads;
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -280,15 +258,9 @@ public class Extractor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return numDownloads;
 	}
-
-	/*
-	 * private void filterPhoto() {
-	 * 
-	 * }
-	 */
+	
 	private void printDownloadCompleted(int num, String path) {
 		System.out.println("==================");
 		System.out.println("Download #" + (num + 1) + " complete:");
@@ -298,7 +270,6 @@ public class Extractor {
 	private String extractJsonFromUrl(URL url) {
 		BufferedReader reader = null;
 		try {
-
 			reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			StringBuffer buffer = new StringBuffer();
 			int read;
@@ -306,23 +277,11 @@ public class Extractor {
 			while ((read = reader.read(chars)) != -1) {
 				buffer.append(chars, 0, read);
 			}
-
+			reader.close();
 			return buffer.toString();
-
 		} catch (IOException ex) {
-			Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null,
-					ex);
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException ex) {
-					Logger.getLogger(Extractor.class.getName()).log(
-							Level.SEVERE, null, ex);
-				}
-			}
+			Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
 		return "";
 	}
 
@@ -330,8 +289,7 @@ public class Extractor {
 		try {
 			Desktop.getDesktop().open(new File(this.dir));
 		} catch (IOException e) {
-			System.out
-					.println("Ooops, looks like this folder doesn't exist :(");
+			System.out.println("Ooops, looks like this folder doesn't exist :(");
 			e.printStackTrace();
 		}
 	}
@@ -340,17 +298,14 @@ public class Extractor {
 		System.out.println("==================");
 		System.out.println("Download finished!");
 		System.out.println("==================");
-		System.out.println("Do you want to open " + this.dir
-				+ "\nin your File Explorer? (y/n)");
+		System.out.println("Do you want to open " + this.dir+ "in your File Explorer? (y/n)");
 		boolean isSelected = false;
 		while (!isSelected) {
 			String openFolder = this.scanner.next();
-			if (openFolder.equalsIgnoreCase("y")
-					|| openFolder.equalsIgnoreCase("yes")) {
+			if (openFolder.equalsIgnoreCase("y") || openFolder.equalsIgnoreCase("yes")) {
 				this.openFolder();
 				isSelected = true;
-			} else if (openFolder.equalsIgnoreCase("n")
-					|| openFolder.equalsIgnoreCase("no")) {
+			} else if (openFolder.equalsIgnoreCase("n") || openFolder.equalsIgnoreCase("no")) {
 				isSelected = true;
 			} else {
 				System.out.println("Enter y or n");
