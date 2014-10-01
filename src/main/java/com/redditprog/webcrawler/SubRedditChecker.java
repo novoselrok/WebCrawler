@@ -14,33 +14,34 @@ import org.json.JSONObject;
  */
 public class SubRedditChecker {
 
-	public static boolean verifySubReddit(String sub) {
-		int children_array_length = 0;
-		try {
-			// set the full url of the user input subreddit
-			final URL url = new URL("http://reddit.com/r/" + sub + ".json");
+    public static boolean verifySubReddit(String sub) {
+        int children_array_length = 0;
+        try {
+            // set the full url of the user input subreddit
+            final URL url = new URL(GlobalConfiguration.REDDIT_PRE_SUB_URL + sub + ".json");
 
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-			BufferedReader bin = null;
-			bin = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			StringBuilder jsonString = new StringBuilder();
+            BufferedReader bin = null;
+            bin = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder jsonString = new StringBuilder();
 
-			// below will print out bin
-			String line;
-			while ((line = bin.readLine()) != null)
-				jsonString.append(line);
+            // below will print out bin
+            String line;
+            while ((line = bin.readLine()) != null) {
+                jsonString.append(line);
+            }
 
-			bin.close();
-			JSONObject obj = new JSONObject(jsonString.toString());
-			children_array_length = obj.getJSONObject("data").getJSONArray("children").length();
-		} catch (java.net.SocketTimeoutException e) {
-			return false;
-		} catch (java.io.IOException e) {
-			return false;
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return !(children_array_length == 0);
-	}
+            bin.close();
+            JSONObject obj = new JSONObject(jsonString.toString());
+            children_array_length = obj.getJSONObject("data").getJSONArray("children").length();
+        } catch (java.net.SocketTimeoutException e) {
+            return false;
+        } catch (java.io.IOException e) {
+            return false;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return !(children_array_length == 0);
+    }
 }
