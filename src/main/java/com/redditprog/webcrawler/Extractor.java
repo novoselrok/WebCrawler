@@ -178,6 +178,8 @@ public class Extractor {
             destName = destName.substring(0, destName.length() - 2);
         }
 
+        if(imageIsDuplicate(destName,url)) return numDownloads + 1;
+        
         InputStream is;
         OutputStream os;
         try {
@@ -210,7 +212,7 @@ public class Extractor {
         return numDownloads + 1;
     }
 
-    private int extractImgurAlbum(int numDownloads, URL url) {
+	private int extractImgurAlbum(int numDownloads, URL url) {
         String Client_ID = ClientIDClass.CLIENT_ID;
 
         String[] urlSplit = url.toString().split("/");
@@ -308,6 +310,37 @@ public class Extractor {
         }
     }
 
+
+    /**
+     * Function that makes sure to avoid downloading identical files. If a conflict is found asks the user to manually solve it.
+     * 
+     * @param destName the file destionation path
+     * @param url image source
+     * @return if the image download has to be skipped (true)
+     */
+    private boolean imageIsDuplicate(String destName, URL url) {
+		File file = new File(destName);
+		boolean isImgurLink = url.toString().contains(GlobalConfiguration.IMGUR_CHECK_STRING);
+		//The file exists and it's being downloaded from imgur so its ID is unique -> It's a duplicate.
+		if(file.exists() && isImgurLink) return true;
+		else if (file.exists() && !isImgurLink){
+	        System.out.println(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
+			//Asking user if he wants to overwrite.
+	        while (true) {
+	            String openFolder = this.scanner.next();
+	            if (openFolder.equalsIgnoreCase("y") || openFolder.equalsIgnoreCase("yes")) {
+	                return false; //Overwrite it
+	            } else if (openFolder.equalsIgnoreCase("n") || openFolder.equalsIgnoreCase("no")) {
+	                return true;
+	            } else {
+	                System.out.println("Enter y or n");
+	            }
+	        }
+		}
+		//File doesn't exist.
+		return false;
+	}
+    
     private void askUserToOpenFolder() {
         System.out.println(GlobalConfiguration.RESPONSE_RESULT_SUCCESS);
         System.out.println("Do you want to open " + this.dir + "in your File Explorer? (y/n)");
