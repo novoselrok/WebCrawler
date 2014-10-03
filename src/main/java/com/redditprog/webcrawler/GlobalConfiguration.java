@@ -51,6 +51,9 @@ final class GlobalConfiguration {
     protected static final String RESPONSE_RESULT_SUCCESS = "==================\n"
             + "Download finished!\n"
             + "==================";
+    
+
+    protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
 
     // OS
     protected static final String USER_OS = System.getProperty("os.name");
