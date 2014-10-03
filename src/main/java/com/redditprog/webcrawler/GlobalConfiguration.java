@@ -34,6 +34,7 @@ final class GlobalConfiguration {
     protected static final String QUESTION_TOP_TIME = "Top links from which period: hour, day, week, month, year, all";
     protected static final String QUESTION_NUM_PICS = "Enter how many pictures do you want to download: ";
     protected static final String QUESTION_ALBUM_DOWNLOAD = "Do you want to download it? (yes or no)";
+    protected static final String FILE_ALREADY_EXISTS_DIALOG = "This file already exists! Would you like to overwrite it? (yes or no)";
 
     // Invalid responses from user input
     protected static final String INVALID_RESPONSE_START_AGAIN = "That is not a valid input. Please try again (y/n):";
@@ -66,5 +67,6 @@ final class GlobalConfiguration {
     protected static final String IMGUR_API_URL = "https://api.imgur.com/3/album/";
     protected static final String IMGUR_ALBUM_URL_PATTERN = "imgur.com/a/";
     protected static final String IMGUR_SINGLE_URL_PATTERN = "i.imgur.com";
+    protected static final String IMGUR_CHECK_STRING = "imgur";
 
 }
