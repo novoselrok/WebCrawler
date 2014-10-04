@@ -1,5 +1,6 @@
 package com.redditprog.webcrawler;
 
+import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 
@@ -87,8 +88,35 @@ public class Launcher {
             } else if (!dir_temp.endsWith("/") && OS.startsWith(GlobalConfiguration.OS_LINUX)) {
                 dir_temp += "/";
             }
-        }        
+            if(!isValidfolder(dir_temp)){
+            	System.out.println(GlobalConfiguration.INVALID_FOLDER);
+            	return getDir();
+            }
+        }
+        
+        dir_temp = addSubredditFolder(dir_temp);
         return dir_temp;
+    }
+    
+    private String addSubredditFolder(String dir_temp){
+        boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT);
+        if(isYes){
+        	//Create the folder.
+            if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
+                dir_temp += sub + "\\";
+            } else if (OS.startsWith(GlobalConfiguration.OS_LINUX)) {
+                dir_temp += sub + "/";
+            }
+            //Creating the folder if it doesn't exist
+        	File file = new File(dir_temp);
+        	file.mkdir();
+        }
+        return dir_temp;
+    }
+    
+    private boolean isValidfolder(String directory){
+    	File file = new File(directory);
+    	return file.isDirectory();
     }
 
     private String getTypeOfLinks() {

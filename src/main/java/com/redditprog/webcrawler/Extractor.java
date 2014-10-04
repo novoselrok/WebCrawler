@@ -50,7 +50,7 @@ public class Extractor {
         this.type_of_links = type_of_links;
         this.top_time = top_time;
     }
-
+    
     public void beginExtract() {
         // set the full url of the user input subreddit
         URL urlJson;
@@ -83,7 +83,7 @@ public class Extractor {
             try {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
-                if(after.equalsIgnoreCase("null")){
+                if(after.equalsIgnoreCase("null") && json_url.contains("after")){
                 	System.out.println(GlobalConfiguration.NO_MORE_PICS_FOND);
                 	break;
                 }
@@ -140,10 +140,10 @@ public class Extractor {
             }
 
             if (numDownloads >= this.num_pics) {
-                this.askUserToOpenFolder();
                 break;
             }
         }
+        if(numDownloads > 0) this.askUserToOpenFolder();
     }
     
     private int extractPicFromImgurAPI(String id, int numDownloads){
