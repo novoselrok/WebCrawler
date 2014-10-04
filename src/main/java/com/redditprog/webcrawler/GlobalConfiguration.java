@@ -66,7 +66,8 @@ final class GlobalConfiguration {
 
     // URLs and patterns
     protected static final String REDDIT_PRE_SUB_URL = "http://reddit.com/r/";
-    protected static final String IMGUR_API_URL = "https://api.imgur.com/3/album/";
+    protected static final String IMGUR_API_ALBUM_URL = "https://api.imgur.com/3/album/";
+    protected static final String IMGUR_API_IMAGE_URL = "https://api.imgur.com/3/image/";
     protected static final String IMGUR_ALBUM_URL_PATTERN = "imgur.com/a/";
     protected static final String IMGUR_SINGLE_URL_PATTERN = "i.imgur.com";
     protected static final String IMGUR_CHECK_STRING = "imgur";
