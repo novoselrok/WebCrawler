@@ -28,7 +28,7 @@ final class GlobalConfiguration {
     protected static final String QUESTION_START_AGAIN = "Do you want to start again?";
     protected static final String QUESTION_SUB = "What subbredit do you want to download from?";
     protected static final String QUESTION_DIR = "Do you want to save in the default folder?";
-    protected static final String QUESTION_DIR_SUBREDDIT = "Do you want to create a folder for this subreddit?";
+    protected static final String QUESTION_DIR_SUBREDDIT = "Do you want to put the images in the subreddit's folder?";
     protected static final String QUESTION_USER_PREF_PATH = "Enter the path you want to save the pictures in: ";
     protected static final String QUESTION_TYPE_LINKS = "Images from which period: hot, new, rising, "
             + "controversial, top or gilded?";
@@ -53,10 +53,10 @@ final class GlobalConfiguration {
     protected static final String RESPONSE_RESULT_SUCCESS = "==================\n"
             + "Download finished!\n"
             + "==================";
-    protected static final String NO_MORE_PICS_FOND = "==================\nThere are no more pics here! We are done.\n";
+    protected static final String NO_MORE_PICS_FOUND = "==================\nThere are no more pics here! We are done.\n";
 
     protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
-    protected static final String INVALID_FOLDER = "This folder does not exist! Please re-do the process: ";
+    protected static final String INVALID_FOLDER = "This folder does not exist or you have got insufficient permissions! Please re-do the process: ";
 
     // OS
     protected static final String USER_OS = System.getProperty("os.name");

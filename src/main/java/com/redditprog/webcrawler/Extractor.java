@@ -84,7 +84,7 @@ public class Extractor {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
                 if(after.equalsIgnoreCase("null") && json_url.contains("after")){
-                	System.out.println(GlobalConfiguration.NO_MORE_PICS_FOND);
+                	System.out.println(GlobalConfiguration.NO_MORE_PICS_FOUND);
                 	break;
                 }
                 childArray = obj.getJSONObject("data").getJSONArray("children");
