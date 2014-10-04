@@ -36,6 +36,7 @@ final class GlobalConfiguration {
     protected static final String QUESTION_ALBUM_DOWNLOAD = "Do you want to download it?";
     protected static final String FILE_ALREADY_EXISTS_DIALOG = "This file already exists! Would you like to overwrite it?";
     protected static final String QUESTION_GET_YES_NO = "(y)es/(n)o";
+    
     // Invalid responses from user input
     protected static final String INVALID_RESPONSE_SUB = "No such subreddit exist! try again.\n\n";
     protected static final String INVALID_RESPONSE_YES_NO = "Invalid answer. Please answer (y)es or (n)o.";
@@ -50,7 +51,7 @@ final class GlobalConfiguration {
     protected static final String RESPONSE_RESULT_SUCCESS = "==================\n"
             + "Download finished!\n"
             + "==================";
-    
+    protected static final String NO_MORE_PICS_FOND = "There are no more pics here! We are done\n";
 
     protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
 
