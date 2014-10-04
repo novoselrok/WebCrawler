@@ -1,6 +1,7 @@
 package com.redditprog.webcrawler;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Scanner;
 
@@ -116,7 +117,7 @@ public class Launcher {
     
     private boolean isValidfolder(String directory){
     	File file = new File(directory);
-    	return file.isDirectory();
+    	return file.isDirectory() && file.canWrite() && file.canRead() && Files.isReadable(file.toPath()) && Files.isWritable(file.toPath());
     }
 
     private String getTypeOfLinks() {
