@@ -1,9 +1,12 @@
 package com.redditprog.webcrawler;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
  * A small-ish webcrawler
+ *
  * @author Rok
  * @author Ryan
  */
@@ -12,62 +15,33 @@ public class App {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean isFinished = false;
+
+        System.out.println(GlobalConfiguration.WELCOME_MESSAGE);
+        Launcher launcher;
+        boolean isYes;
+
+        // String 1 = subreddit, string 2 = saveddirectory
+        Map<String, String> userHistory = new HashMap<String, String>();
         
         while (!isFinished) {
-            System.out.println("Reddit Photo Extractor 1.0");
-            
-            askUser(scanner);
-            
-            System.out.print("Do you want to extract more photos?(y/n): ");
-            String reply = scanner.next();
-            System.out.println("\n\n");
-            
-            if (reply.equalsIgnoreCase("n")){
+
+            launcher = new Launcher(scanner);
+            launcher.start(userHistory);
+
+            // if new round of information is not in history, add it to history
+            if (!userHistory.keySet().contains(launcher.getSubReddit())) {
+                userHistory.put(launcher.getSubReddit(), launcher.getDirectory());
+            }
+
+            isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_START_AGAIN);
+
+            if (isYes) {
+                System.out.println("\n");
+            } else {
                 isFinished = true;
-                System.out.println("Have a good day!");
+                System.out.println(GlobalConfiguration.EXIT_MESSAGE);
             }
         }
-        
         scanner.close();
-    }
-    
-    public static void askUser(Scanner scanner) {
-         //Here we get the Operating Systems' name
-        String os = System.getProperty("os.name");
-        
-        System.out.println("What subbredit do you want to download from?");
-        String sub = scanner.next();
-        
-        System.out.println("Enter how many pictures do you want to download: ");
-        int num_pics = scanner.nextInt();
-
-        
-        System.out.println("Top links from which period: hour, day, week, month, year, all");
-        String top_time = scanner.next();
-        
-        // If top_time is not set to any of the choices except "all", then
-        // the value is set to "all" by default
-        if (!(top_time.contains("hour") || top_time.contains("day") || top_time.contains("week")
-                || top_time.contains("month") || top_time.contains("year"))) {
-            top_time = "all";
-        }
-        
-        String dir;
-        System.out.println("Do you want to save in the current working directory? y(es)/n(o)");
-        String answer = scanner.next().toLowerCase();
-        
-        if(answer.equals("y") || answer.equals("yes")){
-        	dir = System.getProperty("user.dir");
-        	if(os.startsWith("Windows")) dir += "\\";
-        }else if(answer.equals("n") || answer.equals("no")){
-        	System.out.println("Enter the path you want to save the pictures in: ");
-        	dir = scanner.next();
-        	if(!dir.endsWith("\\") && os.startsWith("Windows")) dir += "\\";
-        }else{
-        	dir = "";
-        }
-        
-        Extractor anExtractor = new Extractor(num_pics, sub, dir, top_time);
-        anExtractor.beginExtract();
     }
 }
