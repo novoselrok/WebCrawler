@@ -37,7 +37,7 @@ final class GlobalConfiguration {
     protected static final String QUESTION_ALBUM_DOWNLOAD = "Do you want to download it?";
     protected static final String FILE_ALREADY_EXISTS_DIALOG = "This file already exists! Would you like to overwrite it?";
     protected static final String QUESTION_GET_YES_NO = "(y)es/(n)o";
-    
+
     // Invalid responses from user input
     protected static final String INVALID_RESPONSE_SUB = "No such subreddit exist! try again.\n\n";
     protected static final String INVALID_RESPONSE_YES_NO = "Invalid answer. Please answer (y)es or (n)o.";
@@ -46,7 +46,6 @@ final class GlobalConfiguration {
     protected static final String INVALID_RESPONSE_NUM_PICS_MAX = "You can't download more than 500 pictures. Enter again.";
     protected static final String INVALID_RESPONSE_INVALID_FOLDER = "Ooops, looks like this folder doesn't exist :(";
     protected static final String INVALID_RESPONSE_BLACKLISTED_SUB = "That subreddit does not contains any pictures. Please try again: ";
-    
 
     // Result responses
     protected static final String RESPONSE_RESULT_FAIL = "There weren't enough pictures for your request.";
@@ -57,6 +56,7 @@ final class GlobalConfiguration {
 
     protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
     protected static final String INVALID_FOLDER = "This folder does not exist or you have got insufficient permissions! Please re-do the process: ";
+    protected static final String INVALID_CLIENT_ID_IMGUR_AUTHORIZATION = "Warning! Cannot authorize imgur connection!";
 
     // OS
     protected static final String USER_OS = System.getProperty("os.name");

@@ -3,6 +3,7 @@ package com.redditprog.webcrawler;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Launcher {
@@ -14,12 +15,13 @@ public class Launcher {
     private int num_pics;
     private String type_of_links;
     private String top_time;
+    private String savedDirectory;
 
     public Launcher(Scanner scanner) {
         this.scanner = scanner;
     }
 
-    public void start() {
+    public void start(Map<String,String> userHistory) {
         this.sub = this.getSub();
         this.num_pics = this.getNumPics();
         this.type_of_links = this.getTypeOfLinks();
@@ -30,10 +32,24 @@ public class Launcher {
             this.top_time = "";
         }
 
-        this.dir = this.getDir();
+        if (userHistory.keySet().contains(this.sub)) {
+            this.dir = userHistory.get(this.sub);
+        } else {
+            this.dir = this.getDir();
+        }
+        
+        
         Extractor extractor = new Extractor(this.sub, this.num_pics, this.dir,
                 this.type_of_links, this.top_time);
         extractor.beginExtract();
+    }
+    
+    public String getDirectory() {
+        return this.dir;
+    }
+    
+    public String getSubReddit() {
+        return this.sub;
     }
 
     private String getSub() {
@@ -44,7 +60,7 @@ public class Launcher {
         // Ask user for subreddit name and verifies it
         while (!isValid) {
             System.out.println(GlobalConfiguration.QUESTION_SUB);
-            sub_temp = scanner.next();
+            sub_temp = scanner.next().toLowerCase();
 
             isValid = SubRedditChecker.verifySubReddit(sub_temp);
 
@@ -72,7 +88,7 @@ public class Launcher {
 
     private String getDir() {
         String dir_temp = "";
-        
+
         boolean isYes;
         isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR);
         if (isYes) {
@@ -89,35 +105,35 @@ public class Launcher {
             } else if (!dir_temp.endsWith("/") && OS.startsWith(GlobalConfiguration.OS_LINUX)) {
                 dir_temp += "/";
             }
-            if(!isValidfolder(dir_temp)){
-            	System.out.println(GlobalConfiguration.INVALID_FOLDER);
-            	return getDir();
+            if (!isValidfolder(dir_temp)) {
+                System.out.println(GlobalConfiguration.INVALID_FOLDER);
+                return getDir();
             }
         }
-        
+
         dir_temp = addSubredditFolder(dir_temp);
         return dir_temp;
     }
-    
-    private String addSubredditFolder(String dir_temp){
+
+    private String addSubredditFolder(String dir_temp) {
         boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT);
-        if(isYes){
-        	//Create the folder.
+        if (isYes) {
+            //Create the folder.
             if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
                 dir_temp += sub + "\\";
             } else if (OS.startsWith(GlobalConfiguration.OS_LINUX)) {
                 dir_temp += sub + "/";
             }
             //Creating the folder if it doesn't exist
-        	File file = new File(dir_temp);
-        	file.mkdir();
+            File file = new File(dir_temp);
+            file.mkdir();
         }
         return dir_temp;
     }
-    
-    private boolean isValidfolder(String directory){
-    	File file = new File(directory);
-    	return file.isDirectory() && file.canWrite() && file.canRead() && Files.isReadable(file.toPath()) && Files.isWritable(file.toPath());
+
+    private boolean isValidfolder(String directory) {
+        File file = new File(directory);
+        return file.isDirectory() && file.canWrite() && file.canRead() && Files.isReadable(file.toPath()) && Files.isWritable(file.toPath());
     }
 
     private String getTypeOfLinks() {

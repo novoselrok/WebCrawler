@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
  * @author Rok
  */
 public class Extractor {
+
     // Instance variables
     private final int num_pics;
     private final String sub;
@@ -50,7 +52,7 @@ public class Extractor {
         this.type_of_links = type_of_links;
         this.top_time = top_time;
     }
-    
+
     public void beginExtract() {
         // set the full url of the user input subreddit
         URL urlJson;
@@ -74,47 +76,49 @@ public class Extractor {
         JSONObject obj;
         JSONArray childArray;
         int count = GlobalConfiguration.TOTAL_ITEMS_PER_PAGE;
-    	String base_url = json_url;
-    	
+        String base_url = json_url;
+
         while (true) {
-        	
+
             String jsonString = this.extractJsonFromUrl(urlJson);
 
             try {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
-                if(after.equalsIgnoreCase("null") && json_url.contains("after")){
-                	System.out.println(GlobalConfiguration.NO_MORE_PICS_FOUND);
-                	break;
+                if (after.equalsIgnoreCase("null") && json_url.contains("after")) {
+                    System.out.println(GlobalConfiguration.NO_MORE_PICS_FOUND);
+                    break;
                 }
                 childArray = obj.getJSONObject("data").getJSONArray("children");
 
                 for (int i = 0; i < childArray.length(); i++) {
                     String urlString = this.getImageURL(childArray, i);
                     URL url = new URL(urlString);
-                    
-                    if(urlString.contains("imgur")){                    	
-                    	if (urlString.contains(GlobalConfiguration.IMGUR_ALBUM_URL_PATTERN)) {
+
+                    if (urlString.contains("imgur")) {
+                        if (urlString.contains(GlobalConfiguration.IMGUR_ALBUM_URL_PATTERN)) {
                             numDownloads = this.extractImgurAlbum(numDownloads, url);
-                        }else if(urlString.contains(GlobalConfiguration.IMGUR_SINGLE_URL_PATTERN)) {
+                            System.out.println("album: " + urlString);
+                        } else if (urlString.contains(GlobalConfiguration.IMGUR_SINGLE_URL_PATTERN)) {
                             numDownloads = this.extractSingle(numDownloads, url, "single");
-                        }else if(!isProperImageExtension(urlString)){
-                        	String id = urlString.substring(urlString.lastIndexOf("/") + 1);
-                        	if(id.contains(",")){
-                        		String[] arrayOfIds = id.split(",");
-                        		for(int j = 0; j < arrayOfIds.length; j++){
-                        			numDownloads = extractPicFromImgurAPI(arrayOfIds[j], numDownloads);
-                        		}
-                        	}else{
-                        		numDownloads = extractPicFromImgurAPI(id, numDownloads);
-                        	}
-                        }  
-                    }else if(isProperImageExtension(urlString)){
-                    	numDownloads = this.extractSingle(numDownloads, url, "single");
-                    }else {
-                    	continue;
+                        } else if (!isProperImageExtension(urlString)) {
+                         String id = urlString.substring(urlString.lastIndexOf("/") + 1);
+                         if (id.contains(",")) {
+                         String[] arrayOfIds = id.split(",");
+                         for (int j = 0; j < arrayOfIds.length; j++) {
+                         numDownloads = extractPicFromImgurAPI(arrayOfIds[j], numDownloads);
+                         }
+                         } else {
+                         numDownloads = extractPicFromImgurAPI(id, numDownloads);
+                         }
+                         }
+
+                    } else if (isProperImageExtension(urlString)) {
+                        numDownloads = this.extractSingle(numDownloads, url, "single");
+                    } else {
+                        continue;
                     }
-                    
+
                     if (numDownloads >= this.num_pics) {
                         break;
                     }
@@ -143,26 +147,35 @@ public class Extractor {
                 break;
             }
         }
-        if(numDownloads > 0) this.askUserToOpenFolder();
+        if (numDownloads > 0) {
+            this.askUserToOpenFolder();
+        }
     }
-    
-    private int extractPicFromImgurAPI(String id, int numDownloads){
-    	try{
-	    	String extractedJson = extractImgurAPIJson(id, "image");
-	    	JSONObject object = new JSONObject(extractedJson);
-			URL imageURL = new URL(object.getJSONObject("data").getString("link"));
-			numDownloads = this.extractSingle(numDownloads, imageURL, "single");
-    	}catch(JSONException e){
-    		e.printStackTrace();
-    	} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		return numDownloads;
+
+    private int extractPicFromImgurAPI(String id, int numDownloads) {
+        try {
+            String extractedJson = extractImgurAPIJson(id, "image");
+
+            // This might due to http error code connection
+            // Error code results extractedJson to be empty
+            // Skips extraction
+            if (extractedJson.isEmpty()) {
+                return numDownloads;
+            }
+
+            JSONObject object = new JSONObject(extractedJson);
+            URL imageURL = new URL(object.getJSONObject("data").getString("link"));
+            numDownloads = this.extractSingle(numDownloads, imageURL, "single");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return numDownloads;
     }
-    
-    private boolean isProperImageExtension(String image){
-    	if(image.endsWith("jpg") || image.endsWith("png") || image.endsWith("jpeg") || image.endsWith("gif")) return true;
-    	return false;
+
+    private boolean isProperImageExtension(String image) {
+        return image.endsWith("jpg") || image.endsWith("png") || image.endsWith("jpeg") || image.endsWith("gif");
     }
 
     private String getImageURL(JSONArray childArray, int iteration) {
@@ -196,8 +209,17 @@ public class Extractor {
             destName = destName.substring(0, destName.length() - 2);
         }
 
-        if(imageIsDuplicate(destName,url)) return numDownloads;
-        
+        if (imageIsDuplicate(destName, url)) {
+            return numDownloads;
+        }
+
+        // Verify http connection of the link
+        int httpResponseCode = this.getResponseCode(url);
+
+        if (httpResponseCode != 200) {
+            return numDownloads;
+        }
+
         InputStream is;
         OutputStream os;
         try {
@@ -214,7 +236,7 @@ public class Extractor {
             os.close();
 
             this.printDownloadCompleted(numDownloads, destName);
-            
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null,
                     ex);
@@ -222,20 +244,27 @@ public class Extractor {
             // saving the next image will result to the same error
             // Value of 1 (argument) or any > 0 number means building error has occured
             System.exit(1);
-        } catch (IOException exc)  {
+        } catch (IOException exc) {
             Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null,
                     exc);
-            return  numDownloads;
+            return numDownloads;
         }
         return numDownloads + 1;
     }
 
-	private int extractImgurAlbum(int numDownloads, URL url) {
+    private int extractImgurAlbum(int numDownloads, URL url) {
         String[] urlSplit = url.toString().split("/");
         String url_s = urlSplit[urlSplit.length - 1];
         JSONObject obj;
         JSONArray images_array;
         String extractedJson = extractImgurAPIJson(url_s, "album");
+
+        // This might due to http error code connection
+        // Skips album extraction
+        if (extractedJson.isEmpty()) {
+            return numDownloads;
+        }
+
         try {
             obj = new JSONObject(extractedJson);
 
@@ -244,15 +273,17 @@ public class Extractor {
             int album_num_pics = obj.getJSONObject("data").getInt("images_count");
             System.out.println("==================");
             System.out.println("An album detected! Title is: " + album_title + " Number of pics: " + album_num_pics);
-            
+
             boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_ALBUM_DOWNLOAD);
-            if(isYes){
-            	new File(this.dir + url_s + File.separator).mkdir();
+            if (isYes) {
+                new File(this.dir + url_s + File.separator).mkdir();
                 for (int i = 0; i < images_array.length(); i++) {
                     numDownloads = extractSingle(numDownloads, new URL(images_array.getJSONObject(i).getString("link")), url_s);
                 }
-            }else return numDownloads;
-            
+            } else {
+                return numDownloads;
+            }
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -266,30 +297,82 @@ public class Extractor {
         System.out.println("Download #" + (num + 1) + " complete:");
         System.out.println("Name of the file: " + path);
     }
-    
-    private String extractImgurAPIJson(String id, String apiType){
-    	StringBuilder jsonString = new StringBuilder();
-    	URL jsonUrl = null;
-    	try{
-    		if(apiType.equals("album")) jsonUrl = new URL(GlobalConfiguration.IMGUR_API_ALBUM_URL + id);
-    		else if(apiType.equals("image")) jsonUrl = new URL(GlobalConfiguration.IMGUR_API_IMAGE_URL + id);
-    		else return null;    			
-    			
-	        HttpURLConnection conn = (HttpURLConnection) jsonUrl.openConnection();
-	        conn.setRequestMethod("GET");
-	        conn.setRequestProperty("Authorization", "Client-ID " + ClientIDClass.CLIENT_ID);
-	
-	        BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-	        String line;
-	        while ((line = bin.readLine()) != null) {
-	            jsonString.append(line);
-	        }
-	
-	        bin.close();
-    	}catch(IOException e){
-    		e.printStackTrace();
-    	}
-    	return jsonString.toString();
+
+    // Authorisation is done twice, one for checking http connection through HEAD,
+    // the other authorisation for json extraction though GET
+    // Because authorisation is needed for every api service
+    private String extractImgurAPIJson(String id, String apiType) {
+        StringBuilder jsonString = new StringBuilder();
+        URL jsonUrl;
+        try {
+            if (apiType.equals("album")) {
+                jsonUrl = new URL(GlobalConfiguration.IMGUR_API_ALBUM_URL + id);
+            } else if (apiType.equals("image")) {
+                jsonUrl = new URL(GlobalConfiguration.IMGUR_API_IMAGE_URL + id);
+            } else {
+                return "";
+            }
+
+            // Creates new HttpUTLConnection via jsonURL
+            HttpURLConnection conn = (HttpURLConnection) jsonUrl.openConnection();
+
+            // Authorize connection first
+            this.authorizeImgurConnection(conn);
+
+            // Verify http connection of link
+            // Some pictures are private in imgur
+            int responseCode = this.getResponseCode(jsonUrl);
+            if (responseCode != 200) {
+                return "";
+            }
+
+            BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = bin.readLine()) != null) {
+                jsonString.append(line);
+            }
+            
+            bin.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+        return jsonString.toString();
+    }
+
+    private int getResponseCode(URL jsonUrl) {
+        int responseCode = 0;
+        try {
+            HttpURLConnection aConnection = (HttpURLConnection) jsonUrl.openConnection();
+            this.authorizeImgurConnection(aConnection);
+
+            aConnection.setRequestMethod("HEAD");
+            responseCode = aConnection.getResponseCode();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return responseCode;
+
+    }
+
+    private void authorizeImgurConnection(HttpURLConnection aConnection) {
+        boolean isAuthorised = false;
+        try {
+            aConnection.setRequestMethod("GET");
+            aConnection.setRequestProperty("Authorization", "Client-ID " + ClientIDClass.CLIENT_ID);
+
+            isAuthorised = true;
+        } catch (ProtocolException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Exits application if client id for imgur api is invalid
+        if (!isAuthorised) {
+            System.out.println(GlobalConfiguration.INVALID_CLIENT_ID_IMGUR_AUTHORIZATION);
+            System.exit(1);
+        }
     }
 
     private String extractJsonFromUrl(URL url) {
@@ -319,37 +402,35 @@ public class Extractor {
         }
     }
 
-
     /**
-     * Function that makes sure to avoid downloading identical files. If a conflict is found asks the user to manually solve it.
-     * 
+     * Function that makes sure to avoid downloading identical files. If a
+     * conflict is found asks the user to manually solve it.
+     *
      * @param destName the file destination path
      * @param url image source
      * @return if the image download has to be skipped (true)
      */
     private boolean imageIsDuplicate(String destName, URL url) {
-		File file = new File(destName);
-		boolean isImgurLink = url.toString().contains(GlobalConfiguration.IMGUR_CHECK_STRING);
-		//The file exists and it's being downloaded from imgur so its ID is unique -> It's a duplicate.
-		if(file.exists() && isImgurLink){
-			System.out.println(url + " ---> " + GlobalConfiguration.FILE_ALREADY_EXISTS_NOTIFICATION);
-			return true;
-		}
-		else if (file.exists() && !isImgurLink){
-			//Asking user if he wants to overwrite.
-			return !InputValidator.getYesOrNoAnswer(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
-		}
-		//File doesn't exist.
-		return false;
-	}
-    
+        File file = new File(destName);
+        boolean isImgurLink = url.toString().contains(GlobalConfiguration.IMGUR_CHECK_STRING);
+        //The file exists and it's being downloaded from imgur so its ID is unique -> It's a duplicate.
+        if (file.exists() && isImgurLink) {
+            System.out.println(url + " ---> " + GlobalConfiguration.FILE_ALREADY_EXISTS_NOTIFICATION);
+            return true;
+        } else if (file.exists() && !isImgurLink) {
+            //Asking user if he wants to overwrite.
+            return !InputValidator.getYesOrNoAnswer(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
+        }
+        //File doesn't exist.
+        return false;
+    }
+
     private void askUserToOpenFolder() {
         System.out.println(GlobalConfiguration.RESPONSE_RESULT_SUCCESS);
         boolean isYes = InputValidator.getYesOrNoAnswer("Do you want to open " + this.dir + " in your File Explorer?");
-        if(isYes) this.openFolder();
-        else return;
+        if (isYes) {
+            this.openFolder();
+        }
     }
-    
-    
-    
+
 }
