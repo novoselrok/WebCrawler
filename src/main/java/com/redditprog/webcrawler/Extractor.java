@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,14 +74,19 @@ public class Extractor {
         JSONObject obj;
         JSONArray childArray;
         int count = GlobalConfiguration.TOTAL_ITEMS_PER_PAGE;
-
+    	String base_url = json_url;
+    	
         while (true) {
-
+        	
             String jsonString = this.extractJsonFromUrl(urlJson);
 
             try {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
+                if(after.equalsIgnoreCase("null")){
+                	System.out.println(GlobalConfiguration.NO_MORE_PICS_FOND);
+                	break;
+                }
                 childArray = obj.getJSONObject("data").getJSONArray("children");
 
                 for (int i = 0; i < childArray.length(); i++) {
@@ -117,9 +121,9 @@ public class Extractor {
                 }
 
                 if (type_of_links.equals("top")) {
-                    json_url += "&count=" + count + "&after=" + after;
+                    json_url = base_url + "&count=" + count + "&after=" + after;
                 } else {
-                    json_url += "?count=" + count + "&after=" + after;
+                    json_url = base_url + "?count=" + count + "&after=" + after;
                 }
                 urlJson = new URL(json_url);
                 count += GlobalConfiguration.TOTAL_ITEMS_PER_PAGE;
@@ -326,7 +330,6 @@ public class Extractor {
     private boolean imageIsDuplicate(String destName, URL url) {
 		File file = new File(destName);
 		boolean isImgurLink = url.toString().contains(GlobalConfiguration.IMGUR_CHECK_STRING);
-		boolean isYes;
 		//The file exists and it's being downloaded from imgur so its ID is unique -> It's a duplicate.
 		if(file.exists() && isImgurLink){
 			System.out.println(url + " ---> " + GlobalConfiguration.FILE_ALREADY_EXISTS_NOTIFICATION);
