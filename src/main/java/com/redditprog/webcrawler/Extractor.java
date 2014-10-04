@@ -33,7 +33,6 @@ public class Extractor {
     private final String dir;
     private final String type_of_links;
     private final String top_time;
-    private final Scanner scanner;
 
     /**
      * The class constructor with the following parameters:
@@ -46,14 +45,12 @@ public class Extractor {
      * @param scanner Scanner object pass from Launcher
      */
     public Extractor(String sub, int num, String dir, String type_of_links,
-            String top_time, Scanner scanner) {
+            String top_time) {
         this.sub = sub;
         this.num_pics = num;
         this.dir = dir;
         this.type_of_links = type_of_links;
         this.top_time = top_time;
-        this.scanner = scanner;
-
     }
 
     public void beginExtract() {
@@ -244,8 +241,14 @@ public class Extractor {
             int album_num_pics = obj.getJSONObject("data").getInt("images_count");
 
             System.out.println("An album detected! Title is: " + album_title + " Number of pics: " + album_num_pics);
-            System.out.println(GlobalConfiguration.QUESTION_ALBUM_DOWNLOAD);
-
+            boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_ALBUM_DOWNLOAD);
+            if(isYes){
+            	new File(this.dir + url_s + File.separator).mkdir();
+                for (int i = 0; i < images_array.length(); i++) {
+                    numDownloads = extractSingle(numDownloads, new URL(images_array.getJSONObject(i).getString("link")), url_s);
+                }
+            }else return numDownloads;
+/*
             String response = "";
             while (true) {
                 response = scanner.next();
@@ -255,16 +258,11 @@ public class Extractor {
                 }
             }
             if (response.equals("y") || response.equals("yes")) {
-                new File(this.dir + url_s + File.separator).mkdir();
-                for (int i = 0; i < images_array.length(); i++) {
-                    numDownloads = extractSingle(numDownloads, new URL(
-                            images_array.getJSONObject(i).getString("link")),
-                            url_s);
-                }
+                
             } else {
                 return numDownloads;
             }
-
+*/
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -321,24 +319,17 @@ public class Extractor {
     private boolean imageIsDuplicate(String destName, URL url) {
 		File file = new File(destName);
 		boolean isImgurLink = url.toString().contains(GlobalConfiguration.IMGUR_CHECK_STRING);
+		boolean isYes;
 		//The file exists and it's being downloaded from imgur so its ID is unique -> It's a duplicate.
 		if(file.exists() && isImgurLink){
 			System.out.println(url + " ---> " + GlobalConfiguration.FILE_ALREADY_EXISTS_NOTIFICATION);
 			return true;
 		}
 		else if (file.exists() && !isImgurLink){
-	        System.out.println(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
 			//Asking user if he wants to overwrite.
-	        while (true) {
-	            String openFolder = this.scanner.next();
-	            if (openFolder.equalsIgnoreCase("y") || openFolder.equalsIgnoreCase("yes")) {
-	                return false; //Overwrite it
-	            } else if (openFolder.equalsIgnoreCase("n") || openFolder.equalsIgnoreCase("no")) {
-	                return true;
-	            } else {
-	                System.out.println("Enter y or n");
-	            }
-	        }
+	        isYes = InputValidator.getYesOrNoAnswer(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
+	        if(isYes) return false;
+	        else return true;
 		}
 		//File doesn't exist.
 		return false;
@@ -346,18 +337,11 @@ public class Extractor {
     
     private void askUserToOpenFolder() {
         System.out.println(GlobalConfiguration.RESPONSE_RESULT_SUCCESS);
-        System.out.println("Do you want to open " + this.dir + "in your File Explorer? (y/n)");
-        boolean isSelected = false;
-        while (!isSelected) {
-            String openFolder = this.scanner.next();
-            if (openFolder.equalsIgnoreCase("y") || openFolder.equalsIgnoreCase("yes")) {
-                this.openFolder();
-                isSelected = true;
-            } else if (openFolder.equalsIgnoreCase("n") || openFolder.equalsIgnoreCase("no")) {
-                isSelected = true;
-            } else {
-                System.out.println("Enter y or n");
-            }
-        }
+        boolean isYes = InputValidator.getYesOrNoAnswer("Do you want to open " + this.dir + " in your File Explorer? (y/n)");
+        if(isYes) this.openFolder();
+        else return;
     }
+    
+    
+    
 }

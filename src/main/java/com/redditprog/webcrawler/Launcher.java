@@ -30,7 +30,7 @@ public class Launcher {
 
         this.dir = this.getDir();
         Extractor extractor = new Extractor(this.sub, this.num_pics, this.dir,
-                this.type_of_links, this.top_time, this.scanner);
+                this.type_of_links, this.top_time);
         extractor.beginExtract();
     }
 
@@ -70,33 +70,24 @@ public class Launcher {
 
     private String getDir() {
         String dir_temp = "";
-        boolean isSelectedDir = false;
-        while (!isSelectedDir) {
-            System.out.println(GlobalConfiguration.QUESTION_DIR);
-            String answer = scanner.next().toLowerCase();
-
-            if (answer.equals("y") || answer.equals("yes")) {
-                if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
-                    dir_temp = GlobalConfiguration.WINDOWS_TARGET_PATH;
-                } else if (OS.startsWith(GlobalConfiguration.OS_LINUX)) {
-                    dir_temp = System.getProperty("user.dir") + "/";
-                }
-
-                isSelectedDir = true;
-            } else if (answer.equals("n") || answer.equals("no")) {
-                System.out.println(GlobalConfiguration.QUESTION_USER_PREF_PATH);
-                dir_temp = scanner.next();
-                if (!dir_temp.endsWith("\\") && OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
-                    dir_temp += "\\";
-                } else if (!dir_temp.endsWith("/") && OS.startsWith(GlobalConfiguration.OS_LINUX)) {
-                    dir_temp += "/";
-                }
-
-                isSelectedDir = true;
-            } else {
-                System.out.println(GlobalConfiguration.INVALID_RESPONSE_DIR);
+        
+        boolean isYes;
+        isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR);
+        if (isYes) {
+            if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
+                dir_temp = GlobalConfiguration.WINDOWS_TARGET_PATH;
+            } else if (OS.startsWith(GlobalConfiguration.OS_LINUX)) {
+                dir_temp = System.getProperty("user.dir") + "/";
             }
-        }
+        } else {
+            System.out.println(GlobalConfiguration.QUESTION_USER_PREF_PATH);
+            dir_temp = scanner.next();
+            if (!dir_temp.endsWith("\\") && OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
+                dir_temp += "\\";
+            } else if (!dir_temp.endsWith("/") && OS.startsWith(GlobalConfiguration.OS_LINUX)) {
+                dir_temp += "/";
+            }
+        }        
         return dir_temp;
     }
 

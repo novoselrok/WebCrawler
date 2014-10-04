@@ -25,21 +25,20 @@ final class GlobalConfiguration {
     protected static final String WINDOWS_TARGET_PATH = "C:\\Users\\Public\\Pictures\\";
 
     // Questions for user
-    protected static final String QUESTION_START_AGAIN = "Do you want to start again?(y/n): ";
+    protected static final String QUESTION_START_AGAIN = "Do you want to start again?";
     protected static final String QUESTION_SUB = "What subbredit do you want to download from?";
-    protected static final String QUESTION_DIR = "Do you want to save in the default folder? (y)es/(n)o";
+    protected static final String QUESTION_DIR = "Do you want to save in the default folder?";
     protected static final String QUESTION_USER_PREF_PATH = "Enter the path you want to save the pictures in: ";
     protected static final String QUESTION_TYPE_LINKS = "Images from which period: hot, new, rising, "
             + "controversial, top or gilded?";
     protected static final String QUESTION_TOP_TIME = "Top links from which period: hour, day, week, month, year, all";
     protected static final String QUESTION_NUM_PICS = "Enter how many pictures do you want to download: ";
-    protected static final String QUESTION_ALBUM_DOWNLOAD = "Do you want to download it? (yes or no)";
-    protected static final String FILE_ALREADY_EXISTS_DIALOG = "This file already exists! Would you like to overwrite it? (yes or no)";
-
+    protected static final String QUESTION_ALBUM_DOWNLOAD = "Do you want to download it?";
+    protected static final String FILE_ALREADY_EXISTS_DIALOG = "This file already exists! Would you like to overwrite it?";
+    protected static final String QUESTION_GET_YES_NO = "(y)es/(n)o";
     // Invalid responses from user input
-    protected static final String INVALID_RESPONSE_START_AGAIN = "That is not a valid input. Please try again (y/n):";
     protected static final String INVALID_RESPONSE_SUB = "No such subreddit exist! try again.\n\n";
-    protected static final String INVALID_RESPONSE_DIR = "Invalid answer. Please answer (y)es or (n)o.";
+    protected static final String INVALID_RESPONSE_YES_NO = "Invalid answer. Please answer (y)es or (n)o.";
     protected static final String INVALID_RESPONSE_TYPE_LINKS = "Invalid choice! Please try again: ";
     protected static final String INVALID_RESPONSE_NUM_PICS_INT = "That is not a valid number. Please try again.";
     protected static final String INVALID_RESPONSE_NUM_PICS_MAX = "You can't download more than 500 pictures. Enter again.";

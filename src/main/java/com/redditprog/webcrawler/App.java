@@ -16,25 +16,18 @@ public class App {
 
         System.out.println(GlobalConfiguration.WELCOME_MESSAGE);
         Launcher launcher;
+        boolean isYes;
         while (!isFinished) {
 
             launcher = new Launcher(scanner);
             launcher.start();
-
-            String reply;
-            while (true) {
-                System.out.print(GlobalConfiguration.QUESTION_START_AGAIN);
-                reply = scanner.next();
-
-                if ((reply.equalsIgnoreCase("y")) || (reply.equalsIgnoreCase("n"))) {
-                    break;
-                } else {
-                    System.out.println(GlobalConfiguration.INVALID_RESPONSE_START_AGAIN);
-                }
+            
+            isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_START_AGAIN);
+            if(isYes) {
+            	System.out.println("\n");
+            	continue;
             }
-            System.out.println("\n");
-
-            if (reply.equalsIgnoreCase("n")) {
+            else {
                 isFinished = true;
                 System.out.println(GlobalConfiguration.EXIT_MESSAGE);
             }
