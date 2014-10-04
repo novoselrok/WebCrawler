@@ -334,9 +334,7 @@ public class Extractor {
 		}
 		else if (file.exists() && !isImgurLink){
 			//Asking user if he wants to overwrite.
-	        isYes = InputValidator.getYesOrNoAnswer(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
-	        if(isYes) return false;
-	        else return true;
+			return !InputValidator.getYesOrNoAnswer(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
 		}
 		//File doesn't exist.
 		return false;
