@@ -52,7 +52,7 @@ final class GlobalConfiguration {
     protected static final String RESPONSE_RESULT_SUCCESS = "==================\n"
             + "Download finished!\n"
             + "==================";
-    protected static final String NO_MORE_PICS_FOUND = "==================\nThere are no more pics here! We are done.\n";
+    protected static final String NO_MORE_PICS_FOUND = "==================\nThere are no more pictures to be found! Extraction finished\n";
 
     protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
     protected static final String INVALID_FOLDER = "This folder does not exist or you have got insufficient permissions! Please re-do the process: ";
