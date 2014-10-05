@@ -98,7 +98,6 @@ public class Extractor {
                     if (urlString.contains("imgur")) {
                         if (urlString.contains(GlobalConfiguration.IMGUR_ALBUM_URL_PATTERN)) {
                             numDownloads = this.extractImgurAlbum(numDownloads, url);
-                            System.out.println("album: " + urlString);
                         } else if (urlString.contains(GlobalConfiguration.IMGUR_SINGLE_URL_PATTERN)) {
                             numDownloads = this.extractSingle(numDownloads, url, "single");
                         } else if (!isProperImageExtension(urlString)) {
@@ -419,7 +418,7 @@ public class Extractor {
             return true;
         } else if (file.exists() && !isImgurLink) {
             //Asking user if he wants to overwrite.
-            return !InputValidator.getYesOrNoAnswer(url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
+            return !InputValidator.getYesOrNoAnswer("==================\n" + url + " --> " + GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
         }
         //File doesn't exist.
         return false;
