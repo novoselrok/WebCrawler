@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,6 +59,7 @@ public class Extractor {
         URL urlJson;
         String json_url;
         int numDownloads = 0;
+        ArrayList<String> gildedLinks = new ArrayList<String>();
         try {
             if (type_of_links.equals("top")) {
                 json_url = GlobalConfiguration.REDDIT_PRE_SUB_URL + this.sub + "/"
@@ -81,7 +83,7 @@ public class Extractor {
         while (true) {
 
             String jsonString = this.extractJsonFromUrl(urlJson);
-
+            
             try {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
@@ -94,24 +96,35 @@ public class Extractor {
                 for (int i = 0; i < childArray.length(); i++) {
                     String urlString = this.getImageURL(childArray, i);
                     URL url = new URL(urlString);
-
+                    boolean isContinue = false;
+                    if(this.type_of_links.equals("gilded")){
+                    	for (String gildedLink : gildedLinks) {
+							if(urlString.equals(gildedLink)){
+								isContinue = true;
+								break;
+							}
+						}
+                    	gildedLinks.add(urlString);
+                    }
+                    if(isContinue){
+                    	continue;
+                    }
                     if (urlString.contains("imgur")) {
                         if (urlString.contains(GlobalConfiguration.IMGUR_ALBUM_URL_PATTERN)) {
                             numDownloads = this.extractImgurAlbum(numDownloads, url);
                         } else if (urlString.contains(GlobalConfiguration.IMGUR_SINGLE_URL_PATTERN)) {
                             numDownloads = this.extractSingle(numDownloads, url, "single");
                         } else if (!isProperImageExtension(urlString)) {
-                         String id = urlString.substring(urlString.lastIndexOf("/") + 1);
-                         if (id.contains(",")) {
-                         String[] arrayOfIds = id.split(",");
-                         for (int j = 0; j < arrayOfIds.length; j++) {
-                         numDownloads = extractPicFromImgurAPI(arrayOfIds[j], numDownloads);
+		                     String id = urlString.substring(urlString.lastIndexOf("/") + 1);
+		                     if (id.contains(",")) {
+			                     String[] arrayOfIds = id.split(",");
+			                     for (int j = 0; j < arrayOfIds.length; j++) {
+			                    	 numDownloads = extractPicFromImgurAPI(arrayOfIds[j], numDownloads);
+			                     }
+		                     } else {
+		                     numDownloads = extractPicFromImgurAPI(id, numDownloads);
+		                     }
                          }
-                         } else {
-                         numDownloads = extractPicFromImgurAPI(id, numDownloads);
-                         }
-                         }
-
                     } else if (isProperImageExtension(urlString)) {
                         numDownloads = this.extractSingle(numDownloads, url, "single");
                     } else {
