@@ -414,7 +414,7 @@ public class Extractor {
         boolean isImgurLink = url.toString().contains(GlobalConfiguration.IMGUR_CHECK_STRING);
         //The file exists and it's being downloaded from imgur so its ID is unique -> It's a duplicate.
         if (file.exists() && isImgurLink) {
-            System.out.println(url + " ---> " + GlobalConfiguration.FILE_ALREADY_EXISTS_NOTIFICATION);
+            System.out.println("==================\n" + url + " ---> " + GlobalConfiguration.FILE_ALREADY_EXISTS_NOTIFICATION);
             return true;
         } else if (file.exists() && !isImgurLink) {
             //Asking user if he wants to overwrite.
