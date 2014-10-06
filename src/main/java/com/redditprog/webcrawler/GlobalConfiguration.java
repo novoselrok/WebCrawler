@@ -48,11 +48,10 @@ final class GlobalConfiguration {
     protected static final String INVALID_RESPONSE_BLACKLISTED_SUB = "That subreddit does not contains any pictures. Please try again: ";
 
     // Result responses
-    protected static final String RESPONSE_RESULT_FAIL = "There weren't enough pictures for your request.";
+    protected static final String RESPONSE_RESULT_FAIL = "==================\nThere weren't enough pictures for your request.\n==================";
     protected static final String RESPONSE_RESULT_SUCCESS = "==================\n"
             + "Download finished!\n"
             + "==================";
-    protected static final String NO_MORE_PICS_FOUND = "==================\nThere are no more pictures to be found! Extraction finished\n";
 
     protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
     protected static final String ALBUM_ALREADY_EXISTS_NOTIFICATION = "The album already exist! Download was skipped";

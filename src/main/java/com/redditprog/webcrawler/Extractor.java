@@ -81,16 +81,12 @@ public class Extractor {
         String base_url = json_url;
 
         while (true) {
-
             String jsonString = this.extractJsonFromUrl(urlJson);
 
             try {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
-                if (after.equalsIgnoreCase("null") && json_url.contains("after")) {
-                    System.out.println(GlobalConfiguration.NO_MORE_PICS_FOUND);
-                    break;
-                }
+
                 childArray = obj.getJSONObject("data").getJSONArray("children");
 
                 for (int i = 0; i < childArray.length(); i++) {
@@ -133,14 +129,24 @@ public class Extractor {
                     }
                 }
 
+                // Filter submissions of less than 25 items
+                if (after.equalsIgnoreCase("null")) {
+                    System.out.println(GlobalConfiguration.RESPONSE_RESULT_FAIL);
+                    break;
+                }
+
+                // Updates url for next page
                 if (type_of_links.equals("top")) {
                     json_url = base_url + "&count=" + count + "&after=" + after;
                 } else {
                     json_url = base_url + "?count=" + count + "&after=" + after;
                 }
                 urlJson = new URL(json_url);
+
+                // Updates count
                 count += GlobalConfiguration.TOTAL_ITEMS_PER_PAGE;
 
+                // Limit searches up to 1000th submission
                 if (count >= GlobalConfiguration.TOTAL_SEARCH_LIMIT
                         && numDownloads < this.num_pics) {
                     System.out.println(GlobalConfiguration.RESPONSE_RESULT_FAIL);
@@ -286,8 +292,10 @@ public class Extractor {
             boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_ALBUM_DOWNLOAD);
             if (isYes) {
                 // Filter duplicate album
-                if (this.isAlbumDuplicate(url_s)) return numDownloads;
-                
+                if (this.isAlbumDuplicate(url_s)) {
+                    return numDownloads;
+                }
+
                 new File(this.dir + url_s + File.separator).mkdir();
                 for (int i = 0; i < images_array.length(); i++) {
                     numDownloads = extractSingle(numDownloads, new URL(images_array.getJSONObject(i).getString("link")), url_s);
@@ -303,18 +311,18 @@ public class Extractor {
         }
         return numDownloads;
     }
-    
+
     private boolean isAlbumDuplicate(String album_name) {
         File rootFolder = new File(this.dir);
         String[] items = rootFolder.list();
-        
+
         for (String item : items) {
             if (new File(this.dir + item).isDirectory() && item.equalsIgnoreCase(album_name)) {
                 System.out.println(GlobalConfiguration.ALBUM_ALREADY_EXISTS_NOTIFICATION);
                 return true;
             }
         }
-        
+
         return false;
     }
 
