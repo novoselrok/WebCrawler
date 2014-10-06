@@ -83,7 +83,7 @@ public class Extractor {
         while (true) {
 
             String jsonString = this.extractJsonFromUrl(urlJson);
-            
+
             try {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
@@ -96,35 +96,32 @@ public class Extractor {
                 for (int i = 0; i < childArray.length(); i++) {
                     String urlString = this.getImageURL(childArray, i);
                     URL url = new URL(urlString);
-                    boolean isContinue = false;
-                    if(this.type_of_links.equals("gilded")){
-                    	for (String gildedLink : gildedLinks) {
-							if(urlString.equals(gildedLink)){
-								isContinue = true;
-								break;
-							}
-						}
-                    	gildedLinks.add(urlString);
+                    
+                    // Skips duplicate child url links due to comments for Gilded
+                    if (this.type_of_links.equals("gilded")) {
+                        if (gildedLinks.contains(urlString)) {
+                            continue;
+                        } else {
+                            gildedLinks.add(urlString);
+                        }
                     }
-                    if(isContinue){
-                    	continue;
-                    }
+                    
                     if (urlString.contains("imgur")) {
                         if (urlString.contains(GlobalConfiguration.IMGUR_ALBUM_URL_PATTERN)) {
                             numDownloads = this.extractImgurAlbum(numDownloads, url);
                         } else if (urlString.contains(GlobalConfiguration.IMGUR_SINGLE_URL_PATTERN)) {
                             numDownloads = this.extractSingle(numDownloads, url, "single");
                         } else if (!isProperImageExtension(urlString)) {
-		                     String id = urlString.substring(urlString.lastIndexOf("/") + 1);
-		                     if (id.contains(",")) {
-			                     String[] arrayOfIds = id.split(",");
-			                     for (int j = 0; j < arrayOfIds.length; j++) {
-			                    	 numDownloads = extractPicFromImgurAPI(arrayOfIds[j], numDownloads);
-			                     }
-		                     } else {
-		                     numDownloads = extractPicFromImgurAPI(id, numDownloads);
-		                     }
-                         }
+                            String id = urlString.substring(urlString.lastIndexOf("/") + 1);
+                            if (id.contains(",")) {
+                                String[] arrayOfIds = id.split(",");
+                                for (String arrayOfId : arrayOfIds) {
+                                    numDownloads = extractPicFromImgurAPI(arrayOfId, numDownloads);
+                                }
+                            } else {
+                                numDownloads = extractPicFromImgurAPI(id, numDownloads);
+                            }
+                        }
                     } else if (isProperImageExtension(urlString)) {
                         numDownloads = this.extractSingle(numDownloads, url, "single");
                     } else {
@@ -343,7 +340,7 @@ public class Extractor {
             while ((line = bin.readLine()) != null) {
                 jsonString.append(line);
             }
-            
+
             bin.close();
         } catch (IOException e) {
             e.printStackTrace();
