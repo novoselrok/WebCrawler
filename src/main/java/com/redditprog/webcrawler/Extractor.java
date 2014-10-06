@@ -285,6 +285,9 @@ public class Extractor {
 
             boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_ALBUM_DOWNLOAD);
             if (isYes) {
+                // Filter duplicate album
+                if (this.isAlbumDuplicate(url_s)) return numDownloads;
+                
                 new File(this.dir + url_s + File.separator).mkdir();
                 for (int i = 0; i < images_array.length(); i++) {
                     numDownloads = extractSingle(numDownloads, new URL(images_array.getJSONObject(i).getString("link")), url_s);
@@ -299,6 +302,20 @@ public class Extractor {
             e.printStackTrace();
         }
         return numDownloads;
+    }
+    
+    private boolean isAlbumDuplicate(String album_name) {
+        File rootFolder = new File(this.dir);
+        String[] items = rootFolder.list();
+        
+        for (String item : items) {
+            if (new File(this.dir + item).isDirectory() && item.equalsIgnoreCase(album_name)) {
+                System.out.println(GlobalConfiguration.ALBUM_ALREADY_EXISTS_NOTIFICATION);
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private void printDownloadCompleted(int num, String path) {
