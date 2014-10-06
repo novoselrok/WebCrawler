@@ -21,7 +21,7 @@ public class Launcher {
         this.scanner = scanner;
     }
 
-    public void start(Map<String,String> userHistory) {
+    public void start(Map<String, String> userHistory) {
         this.sub = this.getSub();
         this.num_pics = this.getNumPics();
         this.type_of_links = this.getTypeOfLinks();
@@ -37,17 +37,16 @@ public class Launcher {
         } else {
             this.dir = this.getDir();
         }
-        
-        
+
         Extractor extractor = new Extractor(this.sub, this.num_pics, this.dir,
                 this.type_of_links, this.top_time);
         extractor.beginExtract();
     }
-    
+
     public String getDirectory() {
         return this.dir;
     }
-    
+
     public String getSubReddit() {
         return this.sub;
     }

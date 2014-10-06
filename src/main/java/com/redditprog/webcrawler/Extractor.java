@@ -96,7 +96,7 @@ public class Extractor {
                 for (int i = 0; i < childArray.length(); i++) {
                     String urlString = this.getImageURL(childArray, i);
                     URL url = new URL(urlString);
-                    
+
                     // Skips duplicate child url links due to comments for Gilded
                     if (this.type_of_links.equals("gilded")) {
                         if (gildedLinks.contains(urlString)) {
@@ -105,7 +105,7 @@ public class Extractor {
                             gildedLinks.add(urlString);
                         }
                     }
-                    
+
                     if (urlString.contains("imgur")) {
                         if (urlString.contains(GlobalConfiguration.IMGUR_ALBUM_URL_PATTERN)) {
                             numDownloads = this.extractImgurAlbum(numDownloads, url);
