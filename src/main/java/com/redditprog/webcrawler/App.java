@@ -22,7 +22,7 @@ public class App {
 
         // String 1 = subreddit, string 2 = saveddirectory
         Map<String, String> userHistory = new HashMap<String, String>();
-        
+
         while (!isFinished) {
 
             launcher = new Launcher(scanner);
