@@ -3,7 +3,6 @@ jdk:
 - oraclejdk8
 - oraclejdk7
 - openjdk7
-- openjdk6
 before_install:
 - openssl aes-256-cbc -K $encrypted_3714ff183feb_key -iv $encrypted_3714ff183feb_iv
   -in src/main/java/com/redditprog/webcrawler/ClientIDClass.java.enc -out src/main/java/com/redditprog/webcrawler/ClientIDClass.java -d
