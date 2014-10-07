@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/novoselrok/WebCrawler.svg?branch=master)](https://travis-ci.org/novoselrok/WebCrawler)
+
 WebCrawler
 ==========
 
