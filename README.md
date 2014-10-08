@@ -1,84 +1,29 @@
 [![Build Status](https://travis-ci.org/novoselrok/WebCrawler.svg?branch=master)](https://travis-ci.org/novoselrok/WebCrawler)
+##Reddit Image Downloader
+It's a simple reddit image downloader. You can select any subreddit as long as it exists and it's not empty. Any of these pages can be selected to download the pictures from: hot, new, rising, controversial, top or gilded. You can currently download up to 500 pictures and save them in the default directory (on Windows that is "C:\Users\Public\Pictures\" and on Linux it's the current working directory). Otherwise you can input a valid path yourself. The last option is whether you would like to save in the specific subreddit folder (e.g. pics/pic1.jpg, gameofthrones/pic33.jpg).
 
-WebCrawler
-==========
+##Dependencies
+- org.json
+- JUnit
 
-A simple webcrawler, that downloads pictures from a subreddit of your choice.
-
-<br/>
-Features
---------
-
-- Allows to download png, jpg or jpeg files up to 500 max hosted from imgur
-- Subreddit oriented
-- Filter pictures to download by hot, new, rising, controversial, top and gilded
-- Filter top pictures by this hour, today, this week, this month, this year and all
-
-
-<br/>
-Dependencies:
-------------
-
-- HtmlUnit
-- Json
-
-<br/>
-Installation
-----------
-
-For Maven, add dependencies to your pom.xml:
-```xml
-    <dependency>
-      <groupId>net.sourceforge.htmlunit</groupId>
-      <artifactId>htmlunit</artifactId>
-      <version>2.15</version>
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20090211</version>
-    </dependency>
+##Try it out (v0.1-alpha)
+[Download the JAR](https://github.com/novoselrok/WebCrawler/releases/download/v0.1-alpha/WebCrawler-v0.1-alpha-jar-with-dependencies.jar)
+```
+cd /path/to/jar
+java -jar WebCrawler-v0.1-alpha-jar-with-dependencies
 ```
 
+##TODO list
+- An "Express mode" -> one line input
+- Fast mode for albums
+- Fix imgur deleted links cause the program to launch an exception
+- Refactor the code to follow Google's Java Coding guidelines
+- Build a working GUI on top of it (Swing or JavaFX)
 
-<br/>
-Rough TODO List
------
+##Collaboration
+- Feel free to open an issue, if you want to fix any bugs or throw a suggestion.
 
-- Finalize v1.0 release
-- Sort out any known bugs
-- ~~Provide a Linux path example at 3. question~~
-- ~~Check if the picture is already downloaded~~
-- ~~Check for invalid paths and make the user re-enter them~~
-- ~~Add support for more than 25 pictures~~
-
-
-<br/>
-Roadmap
--------
-
-- Build on top of GUI of some sort
-- Better preformance
-- More filters
-- Add search functionality
-- Support for static gif files
-
-<br/>
-Collaboration
-------------
-Feel free to open an issue, if you want to fix any bugs or throw a suggestion.
-
-<br/>
-ChangeLog
----------
-
-###v0.1-alpha
+##Change log (v0.1-alpha)
 - Download the top pictures of any (existing) subreddit
 - It supports as many pictures as you want
 - Select top links from this day, week, month, year or all time best
-
-
-<br/>
-License
--------
-MIT license

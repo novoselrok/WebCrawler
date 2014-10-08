@@ -100,6 +100,8 @@ public class Extractor {
                         } else {
                             gildedLinks.add(urlString);
                         }
+                    }else if(urlString.contains("gallery")){
+                    	continue;
                     }
 
                     if (urlString.contains("imgur")) {
@@ -288,20 +290,14 @@ public class Extractor {
             int album_num_pics = obj.getJSONObject("data").getInt("images_count");
             System.out.println("==================");
             System.out.println("An album detected! Title is: " + album_title + " Number of pics: " + album_num_pics);
-
-            boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_ALBUM_DOWNLOAD);
-            if (isYes) {
-                // Filter duplicate album
-                if (this.isAlbumDuplicate(url_s)) {
-                    return numDownloads;
-                }
-
-                new File(this.dir + url_s + File.separator).mkdir();
-                for (int i = 0; i < images_array.length(); i++) {
-                    numDownloads = extractSingle(numDownloads, new URL(images_array.getJSONObject(i).getString("link")), url_s);
-                }
-            } else {
+            if (this.isAlbumDuplicate(url_s)) {
                 return numDownloads;
+            }
+
+            new File(this.dir + url_s + File.separator).mkdir();
+            
+            for (int i = 0; i < images_array.length(); i++) {
+                numDownloads = extractSingle(numDownloads, new URL(images_array.getJSONObject(i).getString("link")), url_s);
             }
 
         } catch (MalformedURLException e) {
