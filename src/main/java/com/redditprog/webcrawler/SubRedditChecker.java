@@ -13,8 +13,11 @@ import org.json.JSONObject;
  * @author ryan
  */
 public class SubRedditChecker {
-
-    public static boolean verifySubReddit(String sub) {
+    private static final int CODE_OK = 1;
+    private static final int CODE_BUSY = 2;
+    private static final int CODE_INVALID = 0;
+    
+    public static int verifySubReddit(String sub) {
         int children_array_length = 0;
         try {
             // set the full url of the user input subreddit
@@ -33,15 +36,32 @@ public class SubRedditChecker {
             }
 
             bin.close();
+            
+            // For debugging, for inspection of the contents
+            // Delete after testing
+            System.out.println(jsonString);
+            
+            if (!jsonString.toString().startsWith(GlobalConfiguration.REDDIT_JSON_PATTERN)) {
+                return CODE_BUSY;
+            }
+            
             JSONObject obj = new JSONObject(jsonString.toString());
             children_array_length = obj.getJSONObject("data").getJSONArray("children").length();
+            
+            if (children_array_length > 0) {
+                return CODE_OK;
+            } else {
+                return CODE_INVALID;
+            }
+            
+            
         } catch (java.net.SocketTimeoutException e) {
-            return false;
         } catch (java.io.IOException e) {
-            return false;
+            e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return !(children_array_length == 0);
+        // Return value for exceptions
+        return CODE_INVALID;
     }
 }
