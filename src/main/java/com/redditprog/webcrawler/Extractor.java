@@ -83,6 +83,20 @@ public class Extractor {
         while (true) {
             String jsonString = this.extractJsonFromUrl(urlJson);
 
+            // If extraction fail, skip extraction
+            // they do fail sometimes resulting to empty string due to exception
+            if (jsonString.isEmpty()) {
+                System.out.println(GlobalConfiguration.RESPONSE_RESULT_FAIL);
+                break;
+            }
+
+            // When traffic is high or any other reason, 
+            // the extracted string won't be in json file format
+            if (!jsonString.startsWith(GlobalConfiguration.REDDIT_JSON_PATTERN)) {
+                System.out.println(GlobalConfiguration.RESPONSE_BUSY);
+                System.exit(0);
+            }
+
             try {
                 obj = new JSONObject(jsonString);
                 String after = obj.getJSONObject("data").getString("after");
@@ -444,7 +458,7 @@ public class Extractor {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             int read;
             char[] chars = new char[1024];
             while ((read = reader.read(chars)) != -1) {

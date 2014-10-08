@@ -62,6 +62,7 @@ final class GlobalConfiguration {
     protected static final String RESPONSE_ITEM_UNREACHABLE = "==================\nDownload was skipped, URL unreachable.";
     protected static final String RESPONSE_ITEM_DELETED = "==================\nDownload was skipped, Photo is deleted.";
     protected static final String RESPONSE_ITEM_PRIVATE = "==================\nDownload was skipped, Link is private.";
+    protected static final String RESPONSE_BUSY = "Reddit is not responding, it may be due to high traffic volume.\nExtraction terminated.";
 
     protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
     protected static final String ALBUM_ALREADY_EXISTS_NOTIFICATION = "The album already exist! Download was skipped";
@@ -85,5 +86,6 @@ final class GlobalConfiguration {
     protected static final String IMGUR_ALBUM_URL_PATTERN = "imgur.com/a/";
     protected static final String IMGUR_SINGLE_URL_PATTERN = "i.imgur.com";
     protected static final String IMGUR_CHECK_STRING = "imgur";
+    protected static final String REDDIT_JSON_PATTERN = "{\"kind\"";
 
 }
