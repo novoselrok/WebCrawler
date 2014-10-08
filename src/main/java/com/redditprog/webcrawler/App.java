@@ -42,6 +42,6 @@ public class App {
                 System.out.println(GlobalConfiguration.EXIT_MESSAGE);
             }
         }
-        scanner.close();
-    }
+        scanner.close(); 
+    } 
 }

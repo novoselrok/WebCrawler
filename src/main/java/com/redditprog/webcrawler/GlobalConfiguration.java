@@ -25,6 +25,14 @@ final class GlobalConfiguration {
     protected static final String WINDOWS_TARGET_PATH = "C:\\Users\\Public\\Pictures\\";
 
     // Questions for user
+    protected static final String QUESTION_FAST_MODE = "Welcome to Reddit Photo Extractor. Would you like to run express mode?";
+    protected static final String QUESTION_FAST_MODE_INPUT = "Enter your query [sub],[number of photos],[default folder? (y/n)],"
+            + "[(optional if no) user directory],[save in sub folder? (y/n)],[overwrite duplicate? (y/n)]\n"
+            + "Possible combinations: \n "
+            + "1. aww,10,y,y,n\n"
+            + "2. aww,20,n,/home/Pictures/,y,n"
+            + "3. aww,30,n,/home/Pictures/,n,y";
+
     protected static final String QUESTION_START_AGAIN = "Do you want to start again?";
     protected static final String QUESTION_SUB = "What subbredit do you want to download from?";
     protected static final String QUESTION_DIR = "Do you want to save in the default folder?";
@@ -49,9 +57,11 @@ final class GlobalConfiguration {
 
     // Result responses
     protected static final String RESPONSE_RESULT_FAIL = "==================\nThere weren't enough pictures for your request.\n==================";
-    protected static final String RESPONSE_RESULT_SUCCESS = "==================\n"
-            + "Download finished!\n"
-            + "==================";
+    protected static final String RESPONSE_RESULT_SUCCESS = "==================\nDownload finished!\n==================";
+
+    protected static final String RESPONSE_ITEM_UNREACHABLE = "==================\nDownload was skipped, URL unreachable.";
+    protected static final String RESPONSE_ITEM_DELETED = "==================\nDownload was skipped, Photo is deleted.";
+    protected static final String RESPONSE_ITEM_PRIVATE = "==================\nDownload was skipped, Link is private.";
 
     protected static final String FILE_ALREADY_EXISTS_NOTIFICATION = "The file already exists! Download was skipped.";
     protected static final String ALBUM_ALREADY_EXISTS_NOTIFICATION = "The album already exist! Download was skipped";

@@ -100,8 +100,8 @@ public class Extractor {
                         } else {
                             gildedLinks.add(urlString);
                         }
-                    }else if(urlString.contains("gallery")){
-                    	continue;
+                    } else if (urlString.contains("gallery")) {
+                        continue;
                     }
 
                     if (urlString.contains("imgur")) {
@@ -181,7 +181,13 @@ public class Extractor {
             }
 
             JSONObject object = new JSONObject(extractedJson);
-            URL imageURL = new URL(object.getJSONObject("data").getString("link"));
+            String imageLink = object.getJSONObject("data").getString("link");
+            if (!this.isLinkValid(imageLink)) {
+                System.out.println(GlobalConfiguration.RESPONSE_ITEM_DELETED);
+                return numDownloads;
+            }
+
+            URL imageURL = new URL(imageLink);
             numDownloads = this.extractSingle(numDownloads, imageURL, "single");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -189,6 +195,16 @@ public class Extractor {
             e.printStackTrace();
         }
         return numDownloads;
+    }
+
+    // The last final validation
+    // This is necessary because IMGUR data.link can result to "http://..../.jpg"
+    // with no filename at all, due to recent picture delection (few minutes)
+    // Recent picture delection in imgur, does not guarantee it is not connectable
+    // It can bypass http connection test, so this is a necessary check
+    private boolean isLinkValid(String aLink) {
+        String file = aLink.substring(aLink.lastIndexOf("/") + 1);
+        return !file.startsWith(".");
     }
 
     private boolean isProperImageExtension(String image) {
@@ -231,9 +247,9 @@ public class Extractor {
         }
 
         // Verify http connection of the link
-        int httpResponseCode = this.getResponseCode(url);
+        boolean isVerifiedLink = this.verifyHttpConnection(url);
 
-        if (httpResponseCode != 200) {
+        if (!isVerifiedLink) {
             return numDownloads;
         }
 
@@ -295,7 +311,7 @@ public class Extractor {
             }
 
             new File(this.dir + url_s + File.separator).mkdir();
-            
+
             for (int i = 0; i < images_array.length(); i++) {
                 numDownloads = extractSingle(numDownloads, new URL(images_array.getJSONObject(i).getString("link")), url_s);
             }
@@ -344,6 +360,7 @@ public class Extractor {
             }
 
             // Creates new HttpUTLConnection via jsonURL
+            HttpURLConnection.setFollowRedirects(false);
             HttpURLConnection conn = (HttpURLConnection) jsonUrl.openConnection();
 
             // Authorize connection first
@@ -351,8 +368,9 @@ public class Extractor {
 
             // Verify http connection of link
             // Some pictures are private in imgur
-            int responseCode = this.getResponseCode(jsonUrl);
-            if (responseCode != 200) {
+            boolean isVerifiedLink = this.verifyHttpConnection(jsonUrl);
+
+            if (!isVerifiedLink) {
                 return "";
             }
 
@@ -367,24 +385,39 @@ public class Extractor {
             e.printStackTrace();
             return "";
         }
+
         return jsonString.toString();
     }
 
-    private int getResponseCode(URL jsonUrl) {
-        int responseCode = 0;
+    private boolean verifyHttpConnection(URL jsonUrl) {
+        HttpURLConnection aConnection;
         try {
-            HttpURLConnection aConnection = (HttpURLConnection) jsonUrl.openConnection();
+            aConnection = (HttpURLConnection) jsonUrl.openConnection();
+
             this.authorizeImgurConnection(aConnection);
 
             aConnection.setRequestMethod("HEAD");
-            responseCode = aConnection.getResponseCode();
+            int responseCode = aConnection.getResponseCode();
+            String msg = aConnection.getResponseMessage();
+
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                    System.out.println(GlobalConfiguration.RESPONSE_ITEM_PRIVATE);
+                } else {
+                    System.out.println(GlobalConfiguration.RESPONSE_ITEM_UNREACHABLE);
+                }
+
+                System.out.println("HTTP error code: " + responseCode + " " + msg);
+                return false;
+            } else {
+                return true;
+            }
 
         } catch (IOException ex) {
-            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Extractor.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-
-        return responseCode;
-
     }
 
     private void authorizeImgurConnection(HttpURLConnection aConnection) {
@@ -394,8 +427,10 @@ public class Extractor {
             aConnection.setRequestProperty("Authorization", "Client-ID " + ClientIDClass.CLIENT_ID);
 
             isAuthorised = true;
+
         } catch (ProtocolException ex) {
-            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Extractor.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         // Exits application if client id for imgur api is invalid
@@ -417,8 +452,10 @@ public class Extractor {
             }
             reader.close();
             return buffer.toString();
+
         } catch (IOException ex) {
-            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Extractor.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return "";
     }
