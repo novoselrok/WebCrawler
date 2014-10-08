@@ -52,33 +52,39 @@ public class Launcher {
     }
 
     private String getSub() {
-        boolean isValid = false;
+        int statusCode = 0;
         boolean isBlackListed = false;
         String sub_temp = "";
 
         // Ask user for subreddit name and verifies it
-        while (!isValid) {
+        while (statusCode != 1) {
             System.out.println(GlobalConfiguration.QUESTION_SUB);
             sub_temp = scanner.next().toLowerCase();
 
-            isValid = SubRedditChecker.verifySubReddit(sub_temp);
+            statusCode = SubRedditChecker.verifySubReddit(sub_temp);
 
-            if (!isValid) {
-                System.out.println(GlobalConfiguration.INVALID_RESPONSE_SUB);
-            } else {
-
-                for (String subReddit : GlobalConfiguration.LIST_BLACKLISTED_SUB) {
-                    if (sub_temp.equalsIgnoreCase(subReddit)) {
-                        isBlackListed = true;
+            switch (statusCode) {
+                case 0:
+                    System.out.println(GlobalConfiguration.INVALID_RESPONSE_SUB);
+                    break;
+                case 1:
+                    for (String subReddit : GlobalConfiguration.LIST_BLACKLISTED_SUB) {
+                        if (sub_temp.equalsIgnoreCase(subReddit)) {
+                            isBlackListed = true;
+                        }
                     }
-                }
 
-                if (isBlackListed) {
-                    System.out.println(GlobalConfiguration.INVALID_RESPONSE_BLACKLISTED_SUB);
-                    isBlackListed = false;
-                    isValid = false;
-                }
-
+                    if (isBlackListed) {
+                        System.out.println(GlobalConfiguration.INVALID_RESPONSE_BLACKLISTED_SUB);
+                        isBlackListed = false;
+                        statusCode = 0;
+                    }
+                    break;
+                case 2:
+                    System.out.println(GlobalConfiguration.RESPONSE_BUSY);
+                    break;
+                default:
+                    break;
             }
         }
 
