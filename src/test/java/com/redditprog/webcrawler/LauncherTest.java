@@ -6,6 +6,7 @@
 package com.redditprog.webcrawler;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -20,6 +21,10 @@ import org.junit.Ignore;
  * @author ryan
  */
 public class LauncherTest {
+    
+    protected static final String OS = System.getProperty("os.name");
+    protected static final String OS_WINDOWS = "Windows";
+    protected static final String OS_LINUX = "Linux";
 
     public LauncherTest() {
     }
@@ -45,6 +50,7 @@ public class LauncherTest {
      */
     @Ignore
     public void testStart() {
+        System.out.print("\nMethod: ");
         System.out.println("start");
         Map<String, String> userHistory = null;
         Launcher instance = null;
@@ -58,6 +64,7 @@ public class LauncherTest {
      */
     @Ignore
     public void testGetDirectory() {
+        System.out.print("\nMethod: ");
         System.out.println("getDirectory");
         Launcher instance = null;
         String expResult = "";
@@ -72,6 +79,7 @@ public class LauncherTest {
      */
     @Ignore
     public void testGetSubReddit() {
+        System.out.print("\nMethod: ");
         System.out.println("getSubReddit");
 
         Launcher instance = null;
@@ -87,14 +95,17 @@ public class LauncherTest {
      */
     @Test
     public void testGetSubValid() {
+        System.out.print("\nMethod: ");
         System.out.println("getSub");
         
         String input_sub = "aww";
         System.setIn(new java.io.ByteArrayInputStream(input_sub.getBytes()));
         
         Launcher instance = new Launcher(new Scanner(System.in));
+        
         String expResult = "aww";
         String result = instance.getSub();
+        System.out.println(input_sub);
         
         assertEquals(expResult, result);
         assertTrue(!result.isEmpty());
@@ -105,6 +116,7 @@ public class LauncherTest {
      */
     @Ignore
     public void testGetDir() {
+        System.out.print("\nMethod: ");
         System.out.println("getDir");
         Launcher instance = null;
         String expResult = "";
@@ -115,82 +127,276 @@ public class LauncherTest {
     }
 
     /**
-     * Test of addSubredditFolder method, of class Launcher.
+     * Test of addSubredditFolder method, of class Launcher for "y" input
      */
     @Test
-    public void testAddSubredditFolder() {
+    public void testAddSubredditFolderInputY() {
+        System.out.print("\nMethod: ");
         System.out.println("addSubredditFolder");
         
         String input_sub = "aww";
-        String input_dir = "/home/ryan/Downloads/";
+        
+        String input_dir = "";
+        if (OS.startsWith(OS_LINUX)) {
+            input_dir = "/home/ryan/Downloads/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            input_dir = "C:\\Users\\Public\\Pictures\\";
+        }
+        
         String input_yes = "y";
         System.setIn(new java.io.ByteArrayInputStream(input_yes.getBytes()));
         
         
         Launcher instance = new Launcher(new Scanner(System.in));
+        
         instance.setSub(input_sub);
         String expResult = input_dir + input_sub + "/";
         
         String result = instance.addSubredditFolder(input_dir);
+        System.out.println(input_yes);
+        
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of addSubredditFolder method, of class Launcher for "yes" input
+     */
+    @Test
+    public void testAddSubredditFolderInputYes() {
+        System.out.print("\nMethod: ");
+        System.out.println("addSubredditFolder");
+        
+        String input_sub = "aww";
+        
+        String input_dir = "";
+        if (OS.startsWith(OS_LINUX)) {
+            input_dir = "/home/ryan/Downloads/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            input_dir = "C:\\Users\\Public\\Pictures\\";
+        }
+        
+        String input_yes = "yes";
+        System.setIn(new java.io.ByteArrayInputStream(input_yes.getBytes()));
+        
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        instance.setSub(input_sub);
+        String expResult = input_dir + input_sub + "/";
+        
+        String result = instance.addSubredditFolder(input_dir);
+        System.out.println(input_yes);
+        
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of addSubredditFolder method, of class Launcher for "n" input
+     */
+    @Test
+    public void testAddSubredditFolderInputN() {
+        System.out.print("\nMethod: ");
+        System.out.println("addSubredditFolder");
+        
+        String input_sub = "aww";
+       
+        String input_dir = "";
+        if (OS.startsWith(OS_LINUX)) {
+            input_dir = "/home/ryan/Downloads/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            input_dir = "C:\\Users\\Public\\Pictures\\";
+        }
+        
+        String input_no = "n";
+        System.setIn(new java.io.ByteArrayInputStream(input_no.getBytes()));
+        
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        instance.setSub(input_sub);
+        String expResult = input_dir;
+        
+        String result = instance.addSubredditFolder(input_dir);
+        System.out.println(input_no);
+        
+        assertEquals(expResult, result);
+        
+    }
+    
+    /**
+     * Test of addSubredditFolder method, of class Launcher for "no" input
+     */
+    @Test
+    public void testAddSubredditFolderInputNo() {
+        System.out.print("\nMethod: ");
+        System.out.println("addSubredditFolder");
+        
+        String input_sub = "aww";
+        
+        String input_dir = "";
+        if (OS.startsWith(OS_LINUX)) {
+            input_dir = "/home/ryan/Downloads/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            input_dir = "C:\\Users\\Public\\Pictures\\";
+        }
+        
+        String input_no = "no";
+        System.setIn(new java.io.ByteArrayInputStream(input_no.getBytes()));
+        
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        instance.setSub(input_sub);
+        String expResult = input_dir;
+        
+        String result = instance.addSubredditFolder(input_dir);
+        System.out.println(input_no);
         
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of isValidfolder method, of class Launcher.
+     * Test of isValidfolder method, of class Launcher for valid folder.
      */
-    @Ignore
-    public void testIsValidfolder() {
+    @Test
+    public void testIsValidfolderValid() {
+        System.out.print("\nMethod: ");
         System.out.println("isValidfolder");
         String directory = "";
-        Launcher instance = null;
+        
+        if (OS.startsWith(OS_LINUX)) {
+            directory = "/home/ryan/Downloads";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            directory = "C:\\Users\\Public\\Pictures\\";
+        }
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        boolean expResult = true;
+        boolean result = instance.isValidfolder(directory);
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of isValidfolder method, of class Launcher for invalid folder.
+     */
+    @Test
+    public void testIsValidfolderInvalid() {
+        System.out.print("\nMethod: ");
+        System.out.println("isValidfolder");
+        String directory = "";
+        
+        if (OS.startsWith(OS_LINUX)) {
+            directory = "/Documents/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            directory = "C:\\Home\\";
+        }
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
         boolean expResult = false;
         boolean result = instance.isValidfolder(directory);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getTypeOfLinks method, of class Launcher.
      */
-    @Ignore
+    @Test
     public void testGetTypeOfLinks() {
+        System.out.print("\nMethod: ");
         System.out.println("getTypeOfLinks");
-        Launcher instance = null;
-        String expResult = "";
+        
+        String input_type = "hot";
+        System.setIn(new java.io.ByteArrayInputStream(input_type.getBytes()));
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        String expResult = "hot";
         String result = instance.getTypeOfLinks();
+        System.out.println(input_type);
+        
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
-     * Test of getTopTime method, of class Launcher.
+     * Test of getTopTime method, of class Launcher for valid input.
      */
-    @Ignore
-    public void testGetTopTime() {
+    @Test
+    public void testGetTopTimeValid() {
+        System.out.print("\nMethod: ");
         System.out.println("getTopTime");
-        Launcher instance = null;
-        String expResult = "";
+        
+        String input_top_time = "hour";
+        System.setIn(new java.io.ByteArrayInputStream(input_top_time.getBytes()));
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        String expResult = "hour";
         String result = instance.getTopTime();
+        System.out.println(input_top_time);
+        
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+    
+    /**
+     * Test of getTopTime method, of class Launcher for empty input.
+     */
+    @Test (expected = NoSuchElementException.class)
+    public void testGetTopTimeEmpty() {
+        System.out.print("\nMethod: ");
+        System.out.println("getTopTime");
+        
+        String input_top_time = "";
+        System.setIn(new java.io.ByteArrayInputStream(input_top_time.getBytes()));
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        String expResult = "all";
+        String result = instance.getTopTime();
+        System.out.println("[empty]");
+        
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of getTopTime method, of class Launcher for invalid input.
+     */
+    @Test
+    public void testGetTopTimeInvalid() {
+        System.out.print("\nMethod: ");
+        System.out.println("getTopTime");
+        
+        String input_top_time = "hello";
+        System.setIn(new java.io.ByteArrayInputStream(input_top_time.getBytes()));
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        String expResult = "all";
+        String result = instance.getTopTime();
+        System.out.println(input_top_time);
+        
+        assertEquals(expResult, result);
     }
 
     /**
      * Test of getNumPics method, of class Launcher.
      */
-    @Ignore
+    @Test
     public void testGetNumPics() {
+        System.out.print("\nMethod: ");
         System.out.println("getNumPics");
-        Launcher instance = null;
-        int expResult = 0;
+        
+        String input_num_pics = "2";
+        System.setIn(new java.io.ByteArrayInputStream(input_num_pics.getBytes()));
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
+        
+        int expResult = 2;
         int result = instance.getNumPics();
+        System.out.println(input_num_pics);
+        
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
 }

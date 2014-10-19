@@ -38,7 +38,7 @@ public class Launcher {
         }
 
         Extractor extractor = new Extractor(this.sub, this.numPics, this.dir,
-                this.typeOfLinks, this.topTime);
+                this.typeOfLinks, this.topTime, this.scanner);
         extractor.beginExtract();
     }
 
@@ -94,7 +94,7 @@ public class Launcher {
         String dirTemp = "";
 
         boolean isYes;
-        isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR);
+        isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR, scanner);
         if (isYes) {
             if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
             	dirTemp = GlobalConfiguration.WINDOWS_TARGET_PATH;
@@ -120,7 +120,7 @@ public class Launcher {
     }
 
     public String addSubredditFolder(String dir) {
-        boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT);
+        boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT, scanner);
         if (isYes) {
             //Create the folder.
             if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {

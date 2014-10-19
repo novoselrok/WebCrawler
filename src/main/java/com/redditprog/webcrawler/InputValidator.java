@@ -4,9 +4,7 @@ import java.util.Scanner;
 
 public class InputValidator {
 
-    private static Scanner scanner = new Scanner(System.in);
-
-    public static boolean getYesOrNoAnswer(String question) {
+    public static boolean getYesOrNoAnswer(String question, Scanner scanner) {
         boolean isSelected = false;
         boolean isYes = false;
         String answer = "";
