@@ -12,10 +12,9 @@ public class Launcher {
     private final Scanner scanner;
     private String sub;
     private String dir;
-    private int num_pics;
-    private String type_of_links;
-    private String top_time;
-    private String savedDirectory;
+    private int numPics;
+    private String typeOfLinks;
+    private String topTime;
 
     public Launcher(Scanner scanner) {
         this.scanner = scanner;
@@ -23,13 +22,13 @@ public class Launcher {
 
     public void start(Map<String, String> userHistory) {
         this.sub = this.getSub();
-        this.num_pics = this.getNumPics();
-        this.type_of_links = this.getTypeOfLinks();
+        this.numPics = this.getNumPics();
+        this.typeOfLinks = this.getTypeOfLinks();
 
-        if (type_of_links.equals("top")) {
-            this.top_time = getTopTime();
+        if (typeOfLinks.equals("top")) {
+            this.topTime = getTopTime();
         } else {
-            this.top_time = "";
+            this.topTime = "";
         }
 
         if (userHistory.keySet().contains(this.sub)) {
@@ -38,8 +37,8 @@ public class Launcher {
             this.dir = this.getDir();
         }
 
-        Extractor extractor = new Extractor(this.sub, this.num_pics, this.dir,
-                this.type_of_links, this.top_time);
+        Extractor extractor = new Extractor(this.sub, this.numPics, this.dir,
+                this.typeOfLinks, this.topTime);
         extractor.beginExtract();
     }
 
@@ -54,14 +53,14 @@ public class Launcher {
     private String getSub() {
         int statusCode = 0;
         boolean isBlackListed = false;
-        String sub_temp = "";
+        String subTemp = "";
 
         // Ask user for subreddit name and verifies it
         while (statusCode != 1) {
             System.out.println(GlobalConfiguration.QUESTION_SUB);
-            sub_temp = scanner.next().toLowerCase();
+            subTemp = scanner.next().toLowerCase();
 
-            statusCode = SubRedditChecker.verifySubReddit(sub_temp);
+            statusCode = SubRedditChecker.verifySubReddit(subTemp);
 
             switch (statusCode) {
                 case 0:
@@ -69,7 +68,7 @@ public class Launcher {
                     break;
                 case 1:
                     for (String subReddit : GlobalConfiguration.LIST_BLACKLISTED_SUB) {
-                        if (sub_temp.equalsIgnoreCase(subReddit)) {
+                        if (subTemp.equalsIgnoreCase(subReddit)) {
                             isBlackListed = true;
                         }
                     }
@@ -88,52 +87,52 @@ public class Launcher {
             }
         }
 
-        return sub_temp;
+        return subTemp;
     }
 
     private String getDir() {
-        String dir_temp = "";
+        String dirTemp = "";
 
         boolean isYes;
         isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR);
         if (isYes) {
             if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
-                dir_temp = GlobalConfiguration.WINDOWS_TARGET_PATH;
+            	dirTemp = GlobalConfiguration.WINDOWS_TARGET_PATH;
             } else if (OS.startsWith(GlobalConfiguration.OS_LINUX)) {
-                dir_temp = System.getProperty("user.dir") + "/";
+            	dirTemp = System.getProperty("user.dir") + "/";
             }
         } else {
             System.out.println(GlobalConfiguration.QUESTION_USER_PREF_PATH);
-            dir_temp = scanner.next();
-            if (!dir_temp.endsWith("\\") && OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
-                dir_temp += "\\";
-            } else if (!dir_temp.endsWith("/") && OS.startsWith(GlobalConfiguration.OS_LINUX)) {
-                dir_temp += "/";
+            dirTemp = scanner.next();
+            if (!dirTemp.endsWith("\\") && OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
+            	dirTemp += "\\";
+            } else if (!dirTemp.endsWith("/") && OS.startsWith(GlobalConfiguration.OS_LINUX)) {
+            	dirTemp += "/";
             }
-            if (!isValidfolder(dir_temp)) {
+            if (!isValidfolder(dirTemp)) {
                 System.out.println(GlobalConfiguration.INVALID_FOLDER);
                 return getDir();
             }
         }
 
-        dir_temp = addSubredditFolder(dir_temp);
-        return dir_temp;
+        dirTemp = addSubredditFolder(dirTemp);
+        return dirTemp;
     }
 
-    private String addSubredditFolder(String dir_temp) {
+    private String addSubredditFolder(String dir) {
         boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT);
         if (isYes) {
             //Create the folder.
             if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
-                dir_temp += sub + "\\";
+                dir += sub + "\\";
             } else if (OS.startsWith(GlobalConfiguration.OS_LINUX)) {
-                dir_temp += sub + "/";
+            	dir += sub + "/";
             }
             //Creating the folder if it doesn't exist
-            File file = new File(dir_temp);
+            File file = new File(dir);
             file.mkdir();
         }
-        return dir_temp;
+        return dir;
     }
 
     private boolean isValidfolder(String directory) {
@@ -149,37 +148,37 @@ public class Launcher {
 
         // Ask user for range of links for a subreddit
         System.out.println(GlobalConfiguration.QUESTION_TYPE_LINKS);
-        String type_of_links_temp = scanner.next();
+        String typeOfLinksTemp = scanner.next();
 
         // Force user to enter valid input
         while (!isAcceptable) {
             for (String choice : listOfOptions) {
-                if (type_of_links_temp.equals(choice)) {
+                if (typeOfLinksTemp.equals(choice)) {
                     isAcceptable = true;
                 }
             }
 
             if (!isAcceptable) {
                 System.out.println(GlobalConfiguration.INVALID_RESPONSE_TYPE_LINKS);
-                type_of_links_temp = scanner.next();
+                typeOfLinksTemp = scanner.next();
             }
         }
-        return type_of_links_temp;
+        return typeOfLinksTemp;
     }
 
     private String getTopTime() {
         // Ask user for range of links for a subreddit
         System.out.println(GlobalConfiguration.QUESTION_TOP_TIME);
-        String top_time_temp = scanner.next();
+        String topTimeTemp = scanner.next();
 
         // If top_time is not set to any of the choices except "all", then
         // the value is set to "all" by default
-        if (!(top_time_temp.contains("hour") || top_time_temp.contains("day")
-                || top_time_temp.contains("week") || top_time_temp.contains("month") || top_time_temp.contains("year"))) {
-            top_time_temp = "all";
+        if (!(topTimeTemp.contains("hour") || topTimeTemp.contains("day")
+                || topTimeTemp.contains("week") || topTimeTemp.contains("month") || topTimeTemp.contains("year"))) {
+        	topTimeTemp = "all";
         }
 
-        return top_time_temp;
+        return topTimeTemp;
     }
 
     private int getNumPics() {
@@ -189,16 +188,16 @@ public class Launcher {
             System.out.println(GlobalConfiguration.INVALID_RESPONSE_NUM_PICS_INT);
             scanner.next();
         }
-        int num_pics_temp = 0;
+        int numPicsTemp = 0;
 
         while (true) {
-            num_pics_temp = scanner.nextInt();
-            if (num_pics_temp < GlobalConfiguration.MAX_PICS_ALLOWED) {
+        	numPicsTemp = scanner.nextInt();
+            if (numPicsTemp < GlobalConfiguration.MAX_PICS_ALLOWED) {
                 break;
             } else {
                 System.out.println(GlobalConfiguration.INVALID_RESPONSE_NUM_PICS_MAX);
             }
         }
-        return num_pics_temp;
+        return numPicsTemp;
     }
 }

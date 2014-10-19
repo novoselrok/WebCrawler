@@ -482,8 +482,7 @@ public class Extractor {
 		try {
 			Desktop.getDesktop().open(new File(this.dir));
 		} catch (IOException e) {
-			System.out
-					.println(GlobalConfiguration.INVALID_RESPONSE_INVALID_FOLDER);
+			System.out.println(GlobalConfiguration.INVALID_RESPONSE_INVALID_FOLDER);
 			e.printStackTrace();
 		}
 	}
