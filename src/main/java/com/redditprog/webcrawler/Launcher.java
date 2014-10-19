@@ -50,7 +50,7 @@ public class Launcher {
         return this.sub;
     }
 
-    private String getSub() {
+    public String getSub() {
         int statusCode = 0;
         boolean isBlackListed = false;
         String subTemp = "";
@@ -90,7 +90,7 @@ public class Launcher {
         return subTemp;
     }
 
-    private String getDir() {
+    public String getDir() {
         String dirTemp = "";
 
         boolean isYes;
@@ -119,7 +119,7 @@ public class Launcher {
         return dirTemp;
     }
 
-    private String addSubredditFolder(String dir) {
+    public String addSubredditFolder(String dir) {
         boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT);
         if (isYes) {
             //Create the folder.
@@ -135,12 +135,12 @@ public class Launcher {
         return dir;
     }
 
-    private boolean isValidfolder(String directory) {
+    public boolean isValidfolder(String directory) {
         File file = new File(directory);
         return file.isDirectory() && file.canWrite() && file.canRead() && Files.isReadable(file.toPath()) && Files.isWritable(file.toPath());
     }
 
-    private String getTypeOfLinks() {
+    public String getTypeOfLinks() {
         // Immutable ArrayList of options
         List<String> listOfOptions = GlobalConfiguration.LIST_TYPE_LINKS;
 
@@ -166,7 +166,7 @@ public class Launcher {
         return typeOfLinksTemp;
     }
 
-    private String getTopTime() {
+    public String getTopTime() {
         // Ask user for range of links for a subreddit
         System.out.println(GlobalConfiguration.QUESTION_TOP_TIME);
         String topTimeTemp = scanner.next();
@@ -181,7 +181,7 @@ public class Launcher {
         return topTimeTemp;
     }
 
-    private int getNumPics() {
+    public int getNumPics() {
         System.out.println(GlobalConfiguration.QUESTION_NUM_PICS);
 
         while (!scanner.hasNextInt()) {
@@ -200,4 +200,10 @@ public class Launcher {
         }
         return numPicsTemp;
     }
+
+    public void setSub(String sub) {
+        this.sub = sub;
+    }
+    
+    
 }
