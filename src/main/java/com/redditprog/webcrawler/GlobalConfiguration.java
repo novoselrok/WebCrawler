@@ -14,7 +14,7 @@ import java.util.List;
  */
 final class GlobalConfiguration {
 
-    protected static final String WELCOME_MESSAGE = "Reddit Photo Extractor v0.1-alpha";
+    protected static final String WELCOME_MESSAGE = "Reddit Photo Extractor v1.0";
     protected static final String EXIT_MESSAGE = "Have a good day and thank you for using Reddit Photo Extractor!";
 
     protected static final int MAX_PICS_ALLOWED = 500;

@@ -4,7 +4,7 @@
 
   <groupId>com.redditprog.webcrawler</groupId>
   <artifactId>WebCrawler</artifactId>
-  <version>v0.1-alpha</version>
+  <version>v1.0</version>
   <packaging>jar</packaging>
 
   <name>WebCrawler</name>
