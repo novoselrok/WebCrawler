@@ -37,10 +37,6 @@ public class SubRedditChecker {
 
             bin.close();
             
-            // For debugging, for inspection of the contents
-            // Delete after testing
-            System.out.println(jsonString);
-            
             if (!jsonString.toString().startsWith(GlobalConfiguration.REDDIT_JSON_PATTERN)) {
                 return CODE_BUSY;
             }
