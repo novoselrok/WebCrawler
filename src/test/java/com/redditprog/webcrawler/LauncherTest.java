@@ -25,7 +25,8 @@ public class LauncherTest {
     protected static final String OS = System.getProperty("os.name");
     protected static final String OS_WINDOWS = "Windows";
     protected static final String OS_LINUX = "Linux";
-
+    
+    protected static final String LINUX_PATH = System.getProperty("user.dir");
     protected static final String WINDOWS_DEFAULT_PATH = "C:\\Users\\Public\\Pictures\\";
 
     public LauncherTest() {
@@ -165,7 +166,7 @@ public class LauncherTest {
         instance.setSub(sub);
 
         if (OS.startsWith(OS_LINUX)) {
-            expResult = System.getProperty("user.dir") + "/" + sub + "/";
+            expResult = LINUX_PATH + "/" + sub + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             expResult = WINDOWS_DEFAULT_PATH + sub + "\\";
         }
@@ -189,9 +190,9 @@ public class LauncherTest {
 
         if (OS.startsWith(OS_LINUX)) {
             input_list = "n\n"
-                    + "/home/ryan/Downloads\n"
+                    + LINUX_PATH + "\n"
                     + "n\n";
-            expResult = "/home/ryan/Downloads/";
+            expResult = LINUX_PATH + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             input_list = "n\n"
                     + WINDOWS_DEFAULT_PATH + "\n"
@@ -221,9 +222,9 @@ public class LauncherTest {
 
         if (OS.startsWith(OS_LINUX)) {
             input_list = "n\n"
-                    + "/home/ryan/Downloads\n"
+                    + LINUX_PATH + "\n"
                     + "y\n";
-            expResult = "/home/ryan/Downloads/" + sub + "/";
+            expResult = LINUX_PATH + "/" + sub + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             input_list = "n\n"
                     + WINDOWS_DEFAULT_PATH + "\n"
@@ -250,7 +251,7 @@ public class LauncherTest {
 
         String input_dir = "";
         if (OS.startsWith(OS_LINUX)) {
-            input_dir = "/home/ryan/Downloads/";
+            input_dir = LINUX_PATH + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             input_dir = WINDOWS_DEFAULT_PATH;
         }
@@ -281,7 +282,7 @@ public class LauncherTest {
 
         String input_dir = "";
         if (OS.startsWith(OS_LINUX)) {
-            input_dir = "/home/ryan/Downloads/";
+            input_dir = LINUX_PATH + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             input_dir = WINDOWS_DEFAULT_PATH;
         }
@@ -312,7 +313,7 @@ public class LauncherTest {
 
         String input_dir = "";
         if (OS.startsWith(OS_LINUX)) {
-            input_dir = "/home/ryan/Downloads/";
+            input_dir = LINUX_PATH + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             input_dir = WINDOWS_DEFAULT_PATH;
         }
@@ -344,7 +345,7 @@ public class LauncherTest {
 
         String input_dir = "";
         if (OS.startsWith(OS_LINUX)) {
-            input_dir = "/home/ryan/Downloads/";
+            input_dir = LINUX_PATH + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             input_dir = WINDOWS_DEFAULT_PATH;
         }
@@ -373,7 +374,7 @@ public class LauncherTest {
         String directory = "";
 
         if (OS.startsWith(OS_LINUX)) {
-            directory = "/home/ryan/Downloads";
+            directory = LINUX_PATH;
         } else if (OS.startsWith(OS_WINDOWS)) {
             directory = WINDOWS_DEFAULT_PATH;
         }
