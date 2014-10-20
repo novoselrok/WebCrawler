@@ -25,7 +25,7 @@ public class LauncherTest {
     protected static final String OS = System.getProperty("os.name");
     protected static final String OS_WINDOWS = "Windows";
     protected static final String OS_LINUX = "Linux";
-    
+
     protected static final String WINDOWS_DEFAULT_PATH = "C:\\Users\\Public\\Pictures\\";
 
     public LauncherTest() {
@@ -83,29 +83,121 @@ public class LauncherTest {
     }
 
     /**
-     * Test of getDir method, of class Launcher.
+     * Test of getDir method, of class Launcher for default path and no
+     * subreddit folder.
      */
-    @Ignore
-    public void testGetDir() {
+    @Test
+    public void testGetDirDefaultPathNoSubFolder() {
         System.out.print("\nMethod: ");
         System.out.println("getDir");
-        
-        String input_yes = "y";
-        System.setIn(new java.io.ByteArrayInputStream(input_yes.getBytes()));
-        
-        Launcher instance = new Launcher(new Scanner(System.in));
-        
+
+        String sub = "aww";
         String expResult = "";
+        String input_list = "y\n"
+                + "n\n";
+
+        Launcher instance = new Launcher(new Scanner(input_list));
+        instance.setSub(sub);
+
         if (OS.startsWith(OS_LINUX)) {
             expResult = System.getProperty("user.dir") + "/";
         } else if (OS.startsWith(OS_WINDOWS)) {
             expResult = WINDOWS_DEFAULT_PATH;
-        }        
-        
+        }
+
         String result = instance.getDir();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getDir method, of class Launcher for default path and with
+     * subreddit folder.
+     */
+    @Test
+    public void testGetDirDefaultPathYesSubFolder() {
+        System.out.print("\nMethod: ");
+        System.out.println("getDir");
+
+        String sub = "aww";
+        String expResult = "";
+        String input_list = "y\n"
+                + "y\n";
+
+        Launcher instance = new Launcher(new Scanner(input_list));
+        instance.setSub(sub);
+
+        if (OS.startsWith(OS_LINUX)) {
+            expResult = System.getProperty("user.dir") + "/" + sub + "/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            expResult = WINDOWS_DEFAULT_PATH + sub + "\\";
+        }
+
+        String result = instance.getDir();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getDir method, of class Launcher for custom path and no subreddit
+     * folder.
+     */
+    @Test
+    public void testGetDirCustomPathNoSubFolder() {
+        System.out.print("\nMethod: ");
+        System.out.println("getDir");
+
+        String sub = "aww";
+        String expResult = "";
+        String input_list = "";
+
+        if (OS.startsWith(OS_LINUX)) {
+            input_list = "n\n"
+                    + "/home/ryan/Downloads\n"
+                    + "n\n";
+            expResult = "/home/ryan/Downloads/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            input_list = "n\n"
+                    + WINDOWS_DEFAULT_PATH + "\n"
+                    + "n\n";
+            expResult = WINDOWS_DEFAULT_PATH;
+        }
+
+        Launcher instance = new Launcher(new Scanner(input_list));
+        instance.setSub(sub);
+
+        String result = instance.getDir();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getDir method, of class Launcher for custom path and with 
+     * subreddit folder.
+     */
+    @Test
+    public void testGetDirCustomPathYesSubFolder() {
+        System.out.print("\nMethod: ");
+        System.out.println("getDir");
+
+        String sub = "aww";
+        String expResult = "";
+        String input_list = "";
+
+        if (OS.startsWith(OS_LINUX)) {
+            input_list = "n\n"
+                    + "/home/ryan/Downloads\n"
+                    + "y\n";
+            expResult = "/home/ryan/Downloads/" + sub + "/";
+        } else if (OS.startsWith(OS_WINDOWS)) {
+            input_list = "n\n"
+                    + WINDOWS_DEFAULT_PATH + "\n"
+                    + "y\n";
+            expResult = WINDOWS_DEFAULT_PATH + sub + "\\";
+        }
+
+        Launcher instance = new Launcher(new Scanner(input_list));
+        instance.setSub(sub);
+
+        String result = instance.getDir();
+        assertEquals(expResult, result);
     }
 
     /**
