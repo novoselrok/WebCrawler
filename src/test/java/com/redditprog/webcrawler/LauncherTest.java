@@ -15,6 +15,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.rules.Timeout;
 
 /**
  *
@@ -29,6 +31,10 @@ public class LauncherTest {
     protected static final String LINUX_PATH = System.getProperty("user.dir");
     protected static final String WINDOWS_DEFAULT_PATH = "C:\\Users\\Public\\Pictures\\";
 
+    // Added a 5 second rule for all tests, good for any non-responsive event
+    @Rule
+    public Timeout classTimeOut = new Timeout(5000);
+    
     public LauncherTest() {
     }
 
@@ -82,7 +88,7 @@ public class LauncherTest {
     /**
      * Test of getSub method, of class Launcher.
      */
-    @Test (timeout = 7000)
+    @Test
     public void testGetSubValid() {
         System.out.print("\nMethod: ");
         System.out.println("getSub");
@@ -103,7 +109,7 @@ public class LauncherTest {
      /**
      * Test of getSub method, of class Launcher.
      */
-    @Test (timeout = 7000)
+    @Test
     public void testGetSubInvalid() {
         System.out.print("\nMethod: ");
         System.out.println("getSub");
