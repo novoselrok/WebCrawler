@@ -205,5 +205,39 @@ public class Launcher {
         this.sub = sub;
     }
     
+    public String getSubMember() {
+        if (this.sub != null) {
+            return this.sub;
+        } else  {
+            return "";
+        }
+    }
     
+    public String getDirMember() {
+        if (this.dir != null) {
+            return this.dir;
+        } else  {
+            return "";
+        }
+    }
+    
+    public String getTypeLinksMember() {
+        if (this.typeOfLinks != null) {
+            return this.typeOfLinks;
+        } else  {
+            return "";
+        }
+    }
+    
+    public String getTopTimeMember() {
+        if (this.topTime != null) {
+            return this.topTime;
+        } else  {
+            return "";
+        }
+    }
+    
+    public int getNumPicsMember() {
+        return this.numPics;
+    }
 }
