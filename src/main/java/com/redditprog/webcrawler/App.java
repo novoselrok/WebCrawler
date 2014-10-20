@@ -33,7 +33,7 @@ public class App {
                 userHistory.put(launcher.getSubReddit(), launcher.getDirectory());
             }
 
-            isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_START_AGAIN);
+            isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_START_AGAIN, scanner);
 
             if (isYes) {
                 System.out.println("\n");

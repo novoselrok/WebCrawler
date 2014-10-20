@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,23 +35,26 @@ public class Extractor {
 	private final String dir;
 	private final String typeOfLinks;
 	private final String topTime;
+        private final Scanner scanner;
 
 	/**
 	 * The class constructor with the following parameters:
 	 *
 	 * @param sub SubReddit name
-	 * @param num Number of pictures to extract
+         * @param numPics Number of pictures
 	 * @param dir Directory path to save photos
 	 * @param typeOfLinks Reddit's links categories
 	 * @param topTime Range of Date/Time for the subreddit
+         * @param scanner1 Scanner object
 	 */
 	public Extractor(String sub, int numPics, String dir, String typeOfLinks,
-			String topTime) {
+			String topTime, Scanner scanner1) {
 		this.sub = sub;
 		this.numPics = numPics;
 		this.dir = dir;
 		this.typeOfLinks = typeOfLinks;
 		this.topTime = topTime;
+                this.scanner = scanner1;
 	}
 
 	public void beginExtract() {
@@ -508,7 +512,8 @@ public class Extractor {
 			// Asking user if he wants to overwrite.
 			return !InputValidator.getYesOrNoAnswer("==================\n"
 					+ url + " --> "
-					+ GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG);
+					+ GlobalConfiguration.FILE_ALREADY_EXISTS_DIALOG,
+                                        this.scanner);
 		}
 		// File doesn't exist.
 		return false;
@@ -517,7 +522,7 @@ public class Extractor {
 	private void askUserToOpenFolder() {
 		System.out.println(GlobalConfiguration.RESPONSE_RESULT_SUCCESS);
 		boolean isYes = InputValidator.getYesOrNoAnswer("Do you want to open "
-				+ this.dir + " in your File Explorer?");
+				+ this.dir + " in your File Explorer?", this.scanner);
 		if (isYes) {
 			this.openFolder();
 		}

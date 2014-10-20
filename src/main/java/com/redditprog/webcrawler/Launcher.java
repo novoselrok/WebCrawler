@@ -38,7 +38,7 @@ public class Launcher {
         }
 
         Extractor extractor = new Extractor(this.sub, this.numPics, this.dir,
-                this.typeOfLinks, this.topTime);
+                this.typeOfLinks, this.topTime, this.scanner);
         extractor.beginExtract();
     }
 
@@ -50,7 +50,7 @@ public class Launcher {
         return this.sub;
     }
 
-    private String getSub() {
+    public String getSub() {
         int statusCode = 0;
         boolean isBlackListed = false;
         String subTemp = "";
@@ -90,11 +90,11 @@ public class Launcher {
         return subTemp;
     }
 
-    private String getDir() {
+    public String getDir() {
         String dirTemp = "";
 
         boolean isYes;
-        isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR);
+        isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR, scanner);
         if (isYes) {
             if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
             	dirTemp = GlobalConfiguration.WINDOWS_TARGET_PATH;
@@ -119,8 +119,8 @@ public class Launcher {
         return dirTemp;
     }
 
-    private String addSubredditFolder(String dir) {
-        boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT);
+    public String addSubredditFolder(String dir) {
+        boolean isYes = InputValidator.getYesOrNoAnswer(GlobalConfiguration.QUESTION_DIR_SUBREDDIT, scanner);
         if (isYes) {
             //Create the folder.
             if (OS.startsWith(GlobalConfiguration.OS_WINDOWS)) {
@@ -135,12 +135,12 @@ public class Launcher {
         return dir;
     }
 
-    private boolean isValidfolder(String directory) {
+    public boolean isValidfolder(String directory) {
         File file = new File(directory);
         return file.isDirectory() && file.canWrite() && file.canRead() && Files.isReadable(file.toPath()) && Files.isWritable(file.toPath());
     }
 
-    private String getTypeOfLinks() {
+    public String getTypeOfLinks() {
         // Immutable ArrayList of options
         List<String> listOfOptions = GlobalConfiguration.LIST_TYPE_LINKS;
 
@@ -166,7 +166,7 @@ public class Launcher {
         return typeOfLinksTemp;
     }
 
-    private String getTopTime() {
+    public String getTopTime() {
         // Ask user for range of links for a subreddit
         System.out.println(GlobalConfiguration.QUESTION_TOP_TIME);
         String topTimeTemp = scanner.next();
@@ -181,7 +181,7 @@ public class Launcher {
         return topTimeTemp;
     }
 
-    private int getNumPics() {
+    public int getNumPics() {
         System.out.println(GlobalConfiguration.QUESTION_NUM_PICS);
 
         while (!scanner.hasNextInt()) {
@@ -199,5 +199,45 @@ public class Launcher {
             }
         }
         return numPicsTemp;
+    }
+
+    public void setSub(String sub) {
+        this.sub = sub;
+    }
+    
+    public String getSubMember() {
+        if (this.sub != null) {
+            return this.sub;
+        } else  {
+            return "";
+        }
+    }
+    
+    public String getDirMember() {
+        if (this.dir != null) {
+            return this.dir;
+        } else  {
+            return "";
+        }
+    }
+    
+    public String getTypeLinksMember() {
+        if (this.typeOfLinks != null) {
+            return this.typeOfLinks;
+        } else  {
+            return "";
+        }
+    }
+    
+    public String getTopTimeMember() {
+        if (this.topTime != null) {
+            return this.topTime;
+        } else  {
+            return "";
+        }
+    }
+    
+    public int getNumPicsMember() {
+        return this.numPics;
     }
 }
