@@ -55,16 +55,33 @@ public class LauncherTest {
         System.out.print("\nMethod: ");
         System.out.println("start");
         Map<String, String> userHistory = null;
-        Launcher instance = null;
+        
+        
+        Launcher instance = new Launcher(new Scanner(System.in));
         instance.start(userHistory);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        String expted_sub = "aww";
+        String expted_dir = "";
+        String expted_type_links = "hot";
+        String expted_top_time = "hour";
+        int expted_num_pics = 1;
+        
+        assertEquals("Expected subreddit does not match. ", 
+                expted_sub, instance.getSubMember());
+        assertEquals("Expected directory does not match. ", 
+                expted_dir, instance.getDirMember());
+        assertEquals("Expected type of link does not match. ", 
+                expted_type_links, instance.getTypeLinksMember());
+        assertEquals("Expected top time type does not match. ", 
+                expted_top_time, instance.getTopTime());
+        assertEquals("Expected number of pictures does not match. ", 
+                expted_num_pics, instance.getNumPics());
     }
 
     /**
      * Test of getSub method, of class Launcher.
      */
-    @Test
+    @Test (timeout = 7000)
     public void testGetSubValid() {
         System.out.print("\nMethod: ");
         System.out.println("getSub");
@@ -85,7 +102,7 @@ public class LauncherTest {
      /**
      * Test of getSub method, of class Launcher.
      */
-    @Test
+    @Test (timeout = 7000)
     public void testGetSubInvalid() {
         System.out.print("\nMethod: ");
         System.out.println("getSub");
@@ -455,21 +472,17 @@ public class LauncherTest {
     /**
      * Test of getTopTime method, of class Launcher for empty input.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test (expected = NoSuchElementException.class)
     public void testGetTopTimeEmpty() {
         System.out.print("\nMethod: ");
         System.out.println("getTopTime");
 
-        String input_top_time = "";
-        System.setIn(new java.io.ByteArrayInputStream(input_top_time.getBytes()));
+        String input_top_time = "\n"
+                               + " \n";
+        
+        Launcher instance = new Launcher(new Scanner(input_top_time));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
-
-        String expResult = "all";
         String result = instance.getTopTime();
-        System.out.println("[empty]");
-
-        assertEquals(expResult, result);
     }
 
     /**
