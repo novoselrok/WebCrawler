@@ -81,6 +81,27 @@ public class LauncherTest {
         assertEquals(expResult, result);
         assertTrue(!result.isEmpty());
     }
+    
+     /**
+     * Test of getSub method, of class Launcher.
+     */
+    @Test
+    public void testGetSubInvalid() {
+        System.out.print("\nMethod: ");
+        System.out.println("getSub");
+
+        String input_sub = "jahsdkjash\n"
+                        +   "iwksoaskda\n"
+                        +   "aww\n";
+
+        Launcher instance = new Launcher(new Scanner(input_sub));
+
+        String expResult = "aww";
+        String result = instance.getSub();
+
+        assertEquals(expResult, result);
+        assertTrue(!result.isEmpty());
+    }
 
     /**
      * Test of getDir method, of class Launcher for default path and no
