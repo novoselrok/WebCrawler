@@ -388,6 +388,28 @@ public class LauncherTest {
 
         assertEquals(expResult, result);
     }
+    
+    /**
+     * Test of getTypeOfLinks method, of class Launcher for multiple invalid
+     * inputs then a valid input
+     */
+    @Test
+    public void testGetTypeOfLinksMultipleInvalid() {
+        System.out.print("\nMethod: ");
+        System.out.println("getTypeOfLinks");
+
+        String input_type = "\n"
+                            + " \n"
+                            + "hey\n"
+                            + "hot";
+
+        Launcher instance = new Launcher(new Scanner(input_type));
+
+        String expResult = "hot";
+        String result = instance.getTypeOfLinks();
+
+        assertEquals(expResult, result);
+    }
 
     /**
      * Test of getTopTime method, of class Launcher for valid input.
@@ -463,6 +485,28 @@ public class LauncherTest {
         Launcher instance = new Launcher(new Scanner(System.in));
 
         int expResult = 2;
+        int result = instance.getNumPics();
+        System.out.println(input_num_pics);
+
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of getNumPics method, of class Launcher for multiple invalid inputs
+     * and then a valid input.
+     */
+    @Test
+    public void testGetNumPicsMultipleInvalid() {
+        System.out.print("\nMethod: ");
+        System.out.println("getNumPics");
+
+        String input_num_pics = "asl\n"
+                            +   "1283\n"
+                            +   "4\n";
+
+        Launcher instance = new Launcher(new Scanner(input_num_pics));
+
+        int expResult = 4;
         int result = instance.getNumPics();
         System.out.println(input_num_pics);
 
