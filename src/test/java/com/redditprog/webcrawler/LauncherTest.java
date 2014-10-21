@@ -27,14 +27,15 @@ public class LauncherTest {
     protected static final String OS = System.getProperty("os.name");
     protected static final String OS_WINDOWS = "Windows";
     protected static final String OS_LINUX = "Linux";
-    
+
     protected static final String LINUX_PATH = System.getProperty("user.dir");
     protected static final String WINDOWS_DEFAULT_PATH = "C:\\Users\\Public\\Pictures\\";
+    private Launcher instance;
 
     // Added a 5 second rule for all tests, good for any non-responsive event
     @Rule
     public Timeout classTimeOut = new Timeout(5000);
-    
+
     public LauncherTest() {
     }
 
@@ -48,10 +49,13 @@ public class LauncherTest {
 
     @Before
     public void setUp() {
+        System.out.println("\n### Begin test ###");
+        System.out.print("Method: ");
     }
 
     @After
     public void tearDown() {
+        System.out.println("### End test ###");
     }
 
     /**
@@ -59,29 +63,27 @@ public class LauncherTest {
      */
     @Ignore
     public void testStart() {
-        System.out.print("\nMethod: ");
         System.out.println("start");
         Map<String, String> userHistory = null;
-        
-        
-        Launcher instance = new Launcher(new Scanner(System.in));
+
+        this.instance = new Launcher(new Scanner(System.in));
         instance.start(userHistory);
-        
+
         String expted_sub = "aww";
         String expted_dir = "";
         String expted_type_links = "hot";
         String expted_top_time = "hour";
         int expted_num_pics = 1;
-        
-        assertEquals("Expected subreddit does not match. ", 
+
+        assertEquals("Expected subreddit does not match. ",
                 expted_sub, instance.getSubMember());
-        assertEquals("Expected directory does not match. ", 
+        assertEquals("Expected directory does not match. ",
                 expted_dir, instance.getDirMember());
-        assertEquals("Expected type of link does not match. ", 
+        assertEquals("Expected type of link does not match. ",
                 expted_type_links, instance.getTypeLinksMember());
-        assertEquals("Expected top time type does not match. ", 
+        assertEquals("Expected top time type does not match. ",
                 expted_top_time, instance.getTopTime());
-        assertEquals("Expected number of pictures does not match. ", 
+        assertEquals("Expected number of pictures does not match. ",
                 expted_num_pics, instance.getNumPics());
     }
 
@@ -90,13 +92,12 @@ public class LauncherTest {
      */
     @Test
     public void testGetSubValid() {
-        System.out.print("\nMethod: ");
         System.out.println("getSub");
 
         String input_sub = "aww";
         System.setIn(new java.io.ByteArrayInputStream(input_sub.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         String expResult = "aww";
         String result = instance.getSub();
@@ -105,20 +106,19 @@ public class LauncherTest {
         assertEquals(expResult, result);
         assertTrue(!result.isEmpty());
     }
-    
-     /**
+
+    /**
      * Test of getSub method, of class Launcher.
      */
     @Test
     public void testGetSubInvalid() {
-        System.out.print("\nMethod: ");
         System.out.println("getSub");
 
         String input_sub = "jahsdkjash\n"
-                        +   "iwksoaskda\n"
-                        +   "aww\n";
+                + "iwksoaskda\n"
+                + "aww\n";
 
-        Launcher instance = new Launcher(new Scanner(input_sub));
+        this.instance = new Launcher(new Scanner(input_sub));
 
         String expResult = "aww";
         String result = instance.getSub();
@@ -133,7 +133,6 @@ public class LauncherTest {
      */
     @Test
     public void testGetDirDefaultPathNoSubFolder() {
-        System.out.print("\nMethod: ");
         System.out.println("getDir");
 
         String sub = "aww";
@@ -141,7 +140,7 @@ public class LauncherTest {
         String input_list = "y\n"
                 + "n\n";
 
-        Launcher instance = new Launcher(new Scanner(input_list));
+        this.instance = new Launcher(new Scanner(input_list));
         instance.setSub(sub);
 
         if (OS.startsWith(OS_LINUX)) {
@@ -160,7 +159,6 @@ public class LauncherTest {
      */
     @Test
     public void testGetDirDefaultPathYesSubFolder() {
-        System.out.print("\nMethod: ");
         System.out.println("getDir");
 
         String sub = "aww";
@@ -168,7 +166,7 @@ public class LauncherTest {
         String input_list = "y\n"
                 + "y\n";
 
-        Launcher instance = new Launcher(new Scanner(input_list));
+        this.instance = new Launcher(new Scanner(input_list));
         instance.setSub(sub);
 
         if (OS.startsWith(OS_LINUX)) {
@@ -187,7 +185,6 @@ public class LauncherTest {
      */
     @Test
     public void testGetDirCustomPathNoSubFolder() {
-        System.out.print("\nMethod: ");
         System.out.println("getDir");
 
         String sub = "aww";
@@ -206,7 +203,7 @@ public class LauncherTest {
             expResult = WINDOWS_DEFAULT_PATH;
         }
 
-        Launcher instance = new Launcher(new Scanner(input_list));
+        this.instance = new Launcher(new Scanner(input_list));
         instance.setSub(sub);
 
         String result = instance.getDir();
@@ -214,12 +211,11 @@ public class LauncherTest {
     }
 
     /**
-     * Test of getDir method, of class Launcher for custom path and with 
+     * Test of getDir method, of class Launcher for custom path and with
      * subreddit folder.
      */
     @Test
     public void testGetDirCustomPathYesSubFolder() {
-        System.out.print("\nMethod: ");
         System.out.println("getDir");
 
         String sub = "aww";
@@ -238,7 +234,7 @@ public class LauncherTest {
             expResult = WINDOWS_DEFAULT_PATH + sub + "\\";
         }
 
-        Launcher instance = new Launcher(new Scanner(input_list));
+        this.instance = new Launcher(new Scanner(input_list));
         instance.setSub(sub);
 
         String result = instance.getDir();
@@ -250,7 +246,6 @@ public class LauncherTest {
      */
     @Test
     public void testAddSubredditFolderInputY() {
-        System.out.print("\nMethod: ");
         System.out.println("addSubredditFolder");
 
         String input_sub = "aww";
@@ -265,7 +260,7 @@ public class LauncherTest {
         String input_yes = "y";
         System.setIn(new java.io.ByteArrayInputStream(input_yes.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         instance.setSub(input_sub);
         String expResult = input_dir + input_sub + "/";
@@ -281,7 +276,6 @@ public class LauncherTest {
      */
     @Test
     public void testAddSubredditFolderInputYes() {
-        System.out.print("\nMethod: ");
         System.out.println("addSubredditFolder");
 
         String input_sub = "aww";
@@ -296,7 +290,7 @@ public class LauncherTest {
         String input_yes = "yes";
         System.setIn(new java.io.ByteArrayInputStream(input_yes.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         instance.setSub(input_sub);
         String expResult = input_dir + input_sub + "/";
@@ -312,7 +306,6 @@ public class LauncherTest {
      */
     @Test
     public void testAddSubredditFolderInputN() {
-        System.out.print("\nMethod: ");
         System.out.println("addSubredditFolder");
 
         String input_sub = "aww";
@@ -327,7 +320,7 @@ public class LauncherTest {
         String input_no = "n";
         System.setIn(new java.io.ByteArrayInputStream(input_no.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         instance.setSub(input_sub);
         String expResult = input_dir;
@@ -336,7 +329,6 @@ public class LauncherTest {
         System.out.println(input_no);
 
         assertEquals(expResult, result);
-
     }
 
     /**
@@ -344,7 +336,6 @@ public class LauncherTest {
      */
     @Test
     public void testAddSubredditFolderInputNo() {
-        System.out.print("\nMethod: ");
         System.out.println("addSubredditFolder");
 
         String input_sub = "aww";
@@ -359,7 +350,7 @@ public class LauncherTest {
         String input_no = "no";
         System.setIn(new java.io.ByteArrayInputStream(input_no.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         instance.setSub(input_sub);
         String expResult = input_dir;
@@ -375,7 +366,6 @@ public class LauncherTest {
      */
     @Test
     public void testIsValidfolderValid() {
-        System.out.print("\nMethod: ");
         System.out.println("isValidfolder");
         String directory = "";
 
@@ -385,7 +375,7 @@ public class LauncherTest {
             directory = WINDOWS_DEFAULT_PATH;
         }
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         boolean expResult = true;
         boolean result = instance.isValidfolder(directory);
@@ -397,7 +387,6 @@ public class LauncherTest {
      */
     @Test
     public void testIsValidfolderInvalid() {
-        System.out.print("\nMethod: ");
         System.out.println("isValidfolder");
         String directory = "";
 
@@ -407,7 +396,7 @@ public class LauncherTest {
             directory = "C:\\Home\\";
         }
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         boolean expResult = false;
         boolean result = instance.isValidfolder(directory);
@@ -419,13 +408,12 @@ public class LauncherTest {
      */
     @Test
     public void testGetTypeOfLinks() {
-        System.out.print("\nMethod: ");
         System.out.println("getTypeOfLinks");
 
         String input_type = "hot";
         System.setIn(new java.io.ByteArrayInputStream(input_type.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         String expResult = "hot";
         String result = instance.getTypeOfLinks();
@@ -433,22 +421,21 @@ public class LauncherTest {
 
         assertEquals(expResult, result);
     }
-    
+
     /**
      * Test of getTypeOfLinks method, of class Launcher for multiple invalid
      * inputs then a valid input
      */
     @Test
     public void testGetTypeOfLinksMultipleInvalid() {
-        System.out.print("\nMethod: ");
         System.out.println("getTypeOfLinks");
 
         String input_type = "\n"
-                            + " \n"
-                            + "hey\n"
-                            + "hot";
+                + " \n"
+                + "hey\n"
+                + "hot";
 
-        Launcher instance = new Launcher(new Scanner(input_type));
+        this.instance = new Launcher(new Scanner(input_type));
 
         String expResult = "hot";
         String result = instance.getTypeOfLinks();
@@ -461,13 +448,12 @@ public class LauncherTest {
      */
     @Test
     public void testGetTopTimeValid() {
-        System.out.print("\nMethod: ");
         System.out.println("getTopTime");
 
         String input_top_time = "hour";
         System.setIn(new java.io.ByteArrayInputStream(input_top_time.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         String expResult = "hour";
         String result = instance.getTopTime();
@@ -479,15 +465,14 @@ public class LauncherTest {
     /**
      * Test of getTopTime method, of class Launcher for empty input.
      */
-    @Test (expected = NoSuchElementException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testGetTopTimeEmpty() {
-        System.out.print("\nMethod: ");
         System.out.println("getTopTime");
 
         String input_top_time = "\n"
-                               + " \n";
-        
-        Launcher instance = new Launcher(new Scanner(input_top_time));
+                + " \n";
+
+        this.instance = new Launcher(new Scanner(input_top_time));
 
         String result = instance.getTopTime();
     }
@@ -497,13 +482,12 @@ public class LauncherTest {
      */
     @Test
     public void testGetTopTimeInvalid() {
-        System.out.print("\nMethod: ");
         System.out.println("getTopTime");
 
         String input_top_time = "hello";
         System.setIn(new java.io.ByteArrayInputStream(input_top_time.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         String expResult = "all";
         String result = instance.getTopTime();
@@ -517,13 +501,12 @@ public class LauncherTest {
      */
     @Test
     public void testGetNumPics() {
-        System.out.print("\nMethod: ");
         System.out.println("getNumPics");
 
         String input_num_pics = "2";
         System.setIn(new java.io.ByteArrayInputStream(input_num_pics.getBytes()));
 
-        Launcher instance = new Launcher(new Scanner(System.in));
+        this.instance = new Launcher(new Scanner(System.in));
 
         int expResult = 2;
         int result = instance.getNumPics();
@@ -531,21 +514,20 @@ public class LauncherTest {
 
         assertEquals(expResult, result);
     }
-    
+
     /**
      * Test of getNumPics method, of class Launcher for multiple invalid inputs
      * and then a valid input.
      */
     @Test
     public void testGetNumPicsMultipleInvalid() {
-        System.out.print("\nMethod: ");
         System.out.println("getNumPics");
 
         String input_num_pics = "asl\n"
-                            +   "1283\n"
-                            +   "4\n";
+                + "1283\n"
+                + "4\n";
 
-        Launcher instance = new Launcher(new Scanner(input_num_pics));
+        this.instance = new Launcher(new Scanner(input_num_pics));
 
         int expResult = 4;
         int result = instance.getNumPics();
